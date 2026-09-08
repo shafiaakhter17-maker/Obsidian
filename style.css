@@ -1,0 +1,1200 @@
+/* =========================================
+   MY LITTLE NOTES — STYLE
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #050505;
+    --panel: #0c0c0c;
+    --panel-2: #111111;
+    --border: #242424;
+    --text: #f4f1ed;
+    --muted: #99928c;
+    --soft: #c9c2bb;
+    --hover: #171717;
+    --accent: #f4f1ed;
+    --shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 1px solid var(--soft);
+    outline-offset: 3px;
+}
+
+::selection {
+    background: #f4f1ed;
+    color: #050505;
+}
+
+/* =========================================
+   APP LAYOUT
+========================================= */
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 290px;
+    height: 100vh;
+    padding: 38px 24px 25px;
+    background: #070707;
+    border-right: 1px solid var(--border);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 0 8px 35px;
+}
+
+.brand-symbol {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #353535;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+}
+
+.brand h1 {
+    font-family: "Caveat", cursive;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.brand p {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.main-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nav-item {
+    width: 100%;
+    min-height: 47px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #9d9892;
+    background: transparent;
+    border-radius: 12px;
+    text-align: left;
+    transition: .2s ease;
+}
+
+.nav-item i {
+    width: 18px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.nav-item span {
+    font-size: 13px;
+}
+
+.nav-item:hover {
+    background: var(--hover);
+    color: var(--text);
+    transform: translateX(2px);
+}
+
+.nav-item.active {
+    color: var(--text);
+    background: #161616;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding: 20px 8px 0;
+}
+
+.sidebar-bottom p {
+    color: #595550;
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+.close-sidebar {
+    display: none;
+}
+
+.main-content {
+    margin-left: 290px;
+    min-height: 100vh;
+    padding: 55px 6vw 70px;
+}
+
+/* =========================================
+   MOBILE BAR
+========================================= */
+
+.mobile-topbar {
+    display: none;
+}
+
+/* =========================================
+   SECTIONS
+========================================= */
+
+.page-section {
+    display: none;
+    max-width: 1250px;
+    margin: 0 auto;
+    animation: fadeIn .35s ease;
+}
+
+.page-section.active-section {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   HOME
+========================================= */
+
+.hero {
+    min-height: 250px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 0 35px;
+}
+
+.eyebrow {
+    color: #77716c;
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 500;
+}
+
+.hero h2 {
+    margin-top: 12px;
+    font-family: "Caveat", cursive;
+    font-size: clamp(58px, 8vw, 105px);
+    line-height: .9;
+    font-weight: 500;
+    letter-spacing: -2px;
+}
+
+.hero h2 span {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: .45em;
+    vertical-align: top;
+    transform: rotate(-12deg);
+}
+
+.hero-text {
+    max-width: 550px;
+    margin-top: 25px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.theme-button,
+.mobile-theme-button {
+    width: 43px;
+    height: 43px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    background: transparent;
+    transition: .2s ease;
+}
+
+.theme-button:hover,
+.mobile-theme-button:hover {
+    background: var(--text);
+    color: var(--bg);
+    transform: rotate(15deg);
+}
+
+.today-card {
+    min-height: 70px;
+    padding: 20px 24px;
+    margin-bottom: 25px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.today-card span:first-child {
+    color: var(--text);
+    font-family: "Caveat", cursive;
+    font-size: 24px;
+}
+
+.today-card span:last-child {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 13px;
+}
+
+.home-card {
+    min-height: 185px;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    color: var(--text);
+    text-align: left;
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    transition: .25s ease;
+}
+
+.home-card:hover {
+    background: #111;
+    border-color: #3a3a3a;
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+.home-card.large-card {
+    grid-column: span 2;
+    min-height: 250px;
+}
+
+.card-icon {
+    display: block;
+    color: #b7b0aa;
+    font-family: "Caveat", cursive;
+    font-size: 28px;
+    margin-bottom: 32px;
+}
+
+.home-card h3 {
+    font-family: "Caveat", cursive;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.home-card p {
+    max-width: 260px;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.card-arrow {
+    position: absolute;
+    right: 22px;
+    bottom: 20px;
+    color: #777;
+    font-size: 18px;
+    transition: .2s ease;
+}
+
+.home-card:hover .card-arrow {
+    color: var(--text);
+    transform: translateX(5px);
+}
+
+/* =========================================
+   SECTION HEADER
+========================================= */
+
+.section-header {
+    min-height: 105px;
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-header > div {
+    flex: 1;
+}
+
+.section-header h2 {
+    font-family: "Caveat", cursive;
+    font-size: 55px;
+    font-weight: 500;
+    line-height: .9;
+}
+
+.section-header p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.back-button,
+.add-button {
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: transparent;
+    border-radius: 50%;
+    transition: .2s ease;
+}
+
+.back-button:hover,
+.add-button:hover {
+    background: var(--text);
+    color: var(--bg);
+}
+
+.add-button {
+    font-size: 24px;
+}
+
+/* =========================================
+   ENTRIES
+========================================= */
+
+.entries-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.entry-card {
+    width: 100%;
+    min-height: 105px;
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 55px 1fr 30px;
+    align-items: center;
+    gap: 15px;
+    color: var(--text);
+    text-align: left;
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+    transition: .2s ease;
+}
+
+.entry-card:hover {
+    background: #111;
+    border-color: #3b3b3b;
+    transform: translateX(4px);
+}
+
+.entry-number {
+    color: #555;
+    font-family: "Caveat", cursive;
+    font-size: 25px;
+}
+
+.entry-info {
+    min-width: 0;
+}
+
+.entry-date {
+    display: block;
+    margin-bottom: 5px;
+    color: #66615d;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.entry-info h3 {
+    font-family: "Caveat", cursive;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.entry-info p {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.entry-arrow {
+    color: #666;
+    font-size: 20px;
+    transition: .2s ease;
+}
+
+.entry-card:hover .entry-arrow {
+    color: var(--text);
+    transform: translateX(4px);
+}
+
+.empty-state {
+    min-height: 280px;
+    padding: 50px 20px;
+    border: 1px dashed #292929;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.empty-icon {
+    margin-bottom: 10px;
+    color: #67615c;
+    font-size: 28px;
+}
+
+.empty-state h3 {
+    font-family: "Caveat", cursive;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.empty-state p {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* =========================================
+   TODO
+========================================= */
+
+.todo-box {
+    max-width: 800px;
+}
+
+.todo-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.todo-input-row input {
+    flex: 1;
+    min-width: 0;
+    height: 54px;
+    padding: 0 18px;
+    color: var(--text);
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+    outline: none;
+}
+
+.todo-input-row input:focus {
+    border-color: #555;
+}
+
+.todo-input-row button {
+    width: 90px;
+    color: var(--bg);
+    background: var(--text);
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: .2s ease;
+}
+
+.todo-input-row button:hover {
+    opacity: .8;
+}
+
+#todoList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.todo-item {
+    min-height: 62px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+}
+
+.todo-check {
+    width: 25px;
+    height: 25px;
+    flex: 0 0 25px;
+    border: 1px solid #555;
+    color: var(--bg);
+    background: transparent;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+}
+
+.todo-item.completed .todo-check {
+    background: var(--text);
+}
+
+.todo-text {
+    flex: 1;
+    color: var(--soft);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.todo-item.completed .todo-text {
+    color: #666;
+    text-decoration: line-through;
+}
+
+.todo-edit,
+.todo-delete {
+    width: 30px;
+    height: 30px;
+    color: #777;
+    background: transparent;
+    font-size: 15px;
+}
+
+.todo-edit:hover,
+.todo-delete:hover {
+    color: var(--text);
+}
+
+/* =========================================
+   MOOD
+========================================= */
+
+.mood-card {
+    max-width: 900px;
+    padding: 40px;
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+}
+
+.mood-card h3 {
+    margin-bottom: 30px;
+    font-family: "Caveat", cursive;
+    font-size: 35px;
+    font-weight: 500;
+}
+
+.mood-picker {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.mood-picker button {
+    min-height: 110px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: #101010;
+    font-family: "Caveat", cursive;
+    font-size: 35px;
+    transition: .2s ease;
+}
+
+.mood-picker button:hover {
+    border-color: #555;
+    transform: translateY(-3px);
+}
+
+.mood-picker small {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-family: "Inter", sans-serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+#moodHistory {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mood-history-item {
+    padding: 13px 15px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e1e1e;
+}
+
+.mood-history-item span {
+    font-family: "Caveat", cursive;
+    font-size: 22px;
+}
+
+.mood-history-item small {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.mood-empty {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* =========================================
+   SETTINGS
+========================================= */
+
+.settings-card {
+    max-width: 750px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+}
+
+.settings-card > button {
+    min-height: 85px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: var(--text);
+    background: #0b0b0b;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    transition: .2s ease;
+}
+
+.settings-card > button:last-child {
+    border-bottom: 0;
+}
+
+.settings-card > button:hover {
+    background: #121212;
+}
+
+.settings-card > button > span {
+    width: 35px;
+    color: #999;
+    text-align: center;
+    font-size: 19px;
+}
+
+.settings-card strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.settings-card small {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+/* =========================================
+   MODALS
+========================================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    padding: 25px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,.78);
+    backdrop-filter: blur(8px);
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    width: min(850px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 45px;
+    background: #0b0b0b;
+    border: 1px solid #303030;
+    box-shadow: 0 30px 100px rgba(0,0,0,.6);
+    animation: modalIn .25s ease;
+}
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 17px;
+    right: 20px;
+    width: 35px;
+    height: 35px;
+    color: #888;
+    background: transparent;
+    font-size: 25px;
+}
+
+.modal-close:hover {
+    color: var(--text);
+}
+
+.entry-title-input {
+    width: 100%;
+    margin-top: 15px;
+    padding: 5px 0 15px;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    outline: none;
+    font-family: "Caveat", cursive;
+    font-size: 45px;
+}
+
+.entry-title-input::placeholder,
+.entry-content-input::placeholder {
+    color: #555;
+}
+
+.entry-content-input {
+    width: 100%;
+    min-height: 330px;
+    margin-top: 25px;
+    padding: 5px 0;
+    resize: vertical;
+    color: var(--soft);
+    background: transparent;
+    border: 0;
+    outline: none;
+    font-family: "Caveat", cursive;
+    font-size: 25px;
+    line-height: 1.65;
+}
+
+.editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.cancel-button,
+.save-button {
+    min-width: 100px;
+    height: 45px;
+    padding: 0 20px;
+}
+
+.cancel-button {
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.save-button {
+    color: var(--bg);
+    background: var(--text);
+}
+
+.cancel-button:hover {
+    border-color: #555;
+}
+
+.save-button:hover {
+    opacity: .82;
+}
+
+.view-modal-content h2 {
+    margin-top: 8px;
+    font-family: "Caveat", cursive;
+    font-size: 52px;
+    font-weight: 500;
+}
+
+.view-text {
+    margin-top: 30px;
+    color: var(--soft);
+    font-family: "Caveat", cursive;
+    font-size: 24px;
+    line-height: 1.75;
+}
+
+.view-text p {
+    margin-bottom: 18px;
+}
+
+/* =========================================
+   LIGHT MODE
+========================================= */
+
+body.light-mode {
+    --bg: #f1eee9;
+    --panel: #faf8f4;
+    --panel-2: #ffffff;
+    --border: #d8d3cd;
+    --text: #171614;
+    --muted: #706b66;
+    --soft: #3f3b37;
+    --hover: #e7e3dd;
+    --accent: #171614;
+}
+
+body.light-mode .sidebar {
+    background: #f7f4ef;
+}
+
+body.light-mode .home-card,
+body.light-mode .entry-card,
+body.light-mode .todo-item,
+body.light-mode .mood-card,
+body.light-mode .mood-picker button,
+body.light-mode .settings-card > button,
+body.light-mode .modal-content,
+body.light-mode .todo-input-row input {
+    background: #faf8f4;
+}
+
+body.light-mode .home-card:hover,
+body.light-mode .entry-card:hover,
+body.light-mode .settings-card > button:hover {
+    background: #f1eee9;
+}
+
+body.light-mode .nav-item.active {
+    background: #e4dfd8;
+}
+
+body.light-mode .theme-button:hover,
+body.light-mode .mobile-theme-button:hover,
+body.light-mode .back-button:hover,
+body.light-mode .add-button:hover {
+    background: var(--text);
+    color: var(--bg);
+}
+
+body.light-mode .save-button {
+    background: var(--text);
+    color: var(--bg);
+}
+
+body.light-mode .modal {
+    background: rgba(255,255,255,.65);
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1050px) {
+
+    .sidebar {
+        width: 240px;
+    }
+
+    .main-content {
+        margin-left: 240px;
+        padding: 45px 35px 60px;
+    }
+
+    .home-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .home-card.large-card {
+        grid-column: span 2;
+    }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 850px) {
+
+    .sidebar {
+        width: 285px;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 20px 0 60px rgba(0,0,0,.4);
+    }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+
+    .close-sidebar {
+        display: block;
+        position: absolute;
+        top: 19px;
+        right: 18px;
+        width: 35px;
+        height: 35px;
+        color: #888;
+        background: transparent;
+        font-size: 28px;
+    }
+
+    .mobile-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 900;
+        height: 64px;
+        padding: 0 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(5,5,5,.92);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+    }
+
+    .mobile-topbar > span {
+        font-family: "Caveat", cursive;
+        font-size: 25px;
+    }
+
+    .menu-button,
+    .mobile-theme-button {
+        width: 38px;
+        height: 38px;
+        color: var(--text);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 30px 18px 55px;
+    }
+
+    .hero {
+        min-height: 220px;
+    }
+
+    .hero h2 {
+        font-size: clamp(55px, 17vw, 85px);
+    }
+
+    .hero-text {
+        max-width: 90%;
+    }
+
+    .theme-button {
+        display: none;
+    }
+
+    .today-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .home-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-card.large-card {
+        grid-column: span 1;
+        min-height: 210px;
+    }
+
+    .home-card {
+        min-height: 160px;
+    }
+
+    .section-header {
+        min-height: 90px;
+    }
+
+    .section-header h2 {
+        font-size: 48px;
+    }
+
+    .mood-card {
+        padding: 25px 18px;
+    }
+
+    .mood-picker {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mood-picker button:last-child {
+        grid-column: span 2;
+    }
+
+    .modal {
+        padding: 12px;
+    }
+
+    .modal-content {
+        padding: 35px 23px 25px;
+    }
+
+    .entry-title-input {
+        font-size: 38px;
+    }
+
+    .entry-content-input {
+        min-height: 300px;
+        font-size: 22px;
+    }
+}
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 480px) {
+
+    .brand h1 {
+        font-size: 25px;
+    }
+
+    .hero {
+       padding-top: 5px;
+    }
+
+    .hero h2 {
+        font-size: 62px;
+    }
+
+    .hero-text {
+        font-size: 12px;
+    }
+
+    .section-header {
+        gap: 10px;
+    }
+
+    .section-header h2 {
+        font-size: 42px;
+    }
+
+    .back-button,
+    .add-button {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+    }
+
+    .entry-card {
+        grid-template-columns: 35px 1fr 20px;
+        padding: 15px 12px;
+    }
+
+    .entry-info h3 {
+        font-size: 25px;
+    }
+
+    .entry-info p {
+        font-size: 10px;
+    }
+
+    .todo-input-row {
+        flex-direction: column;
+    }
+
+    .todo-input-row button {
+        width: 100%;
+        height: 48px;
+    }
+
+    .editor-actions {
+        width: 100%;
+    }
+
+    .cancel-button,
+    .save-button {
+        flex: 1;
+    }
+}
