@@ -1,9 +1,23 @@
 let currentSection = "home";
-let editingSection = "";
 
-let entries = JSON.parse(localStorage.getItem("myLittleNotesEntries")) || [];
-let todos = JSON.parse(localStorage.getItem("myLittleNotesTodos")) || [];
-let moods = JSON.parse(localStorage.getItem("myLittleNotesMoods")) || [];
+let editingSection = "";
+let editingEntryId = null;
+
+let entries = JSON.parse(
+    localStorage.getItem("myLittleNotesEntries")
+) || [];
+
+let todos = JSON.parse(
+    localStorage.getItem("myLittleNotesTodos")
+) || [];
+
+let moods = JSON.parse(
+    localStorage.getItem("myLittleNotesMoods")
+) || [];
+
+let currentlyViewingEntryId = null;
+let currentlyViewingSection = null;
+
 
 const sectionNames = {
     journal: "Journal",
@@ -14,9 +28,6 @@ const sectionNames = {
     ideas: "Ideas",
     planner: "Planner"
 };
-
-let currentlyViewingEntryId = null;
-let currentlyViewingSection = null;
 
 
 /* =========================
@@ -59,7 +70,9 @@ function showSection(sectionName) {
     }
 
     if (window.innerWidth <= 850) {
-        document.getElementById("sidebar")?.classList.remove("sidebar-open");
+        document
+            .getElementById("sidebar")
+            ?.classList.remove("sidebar-open");
     }
 
     window.scrollTo({
@@ -81,37 +94,83 @@ function toggleSidebar() {
 
 function showTodayDate() {
 
-    const dateElement = document.getElementById("todayDate");
+    const dateElement =
+        document.getElementById("todayDate");
 
     if (!dateElement) return;
 
     const today = new Date();
 
-    dateElement.textContent = today.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric"
-    });
+    dateElement.textContent =
+        today.toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        });
 }
 
 
 /* =========================
-   WRITING EDITOR
+   OPEN WRITER
 ========================= */
 
-function openEditor(sectionName) {
+function openEditor(sectionName, entryId = null) {
 
     editingSection = sectionName;
+    editingEntryId = entryId;
 
-    const modal = document.getElementById("editorModal");
-    const title = document.getElementById("entryTitle");
-    const content = document.getElementById("entryContent");
+    const modal =
+        document.getElementById("editorModal");
+
+    const title =
+        document.getElementById("entryTitle");
+
+    const content =
+        document.getElementById("entryContent");
 
     if (!modal || !title || !content) return;
 
-    title.value = "";
-    content.value = "";
+
+    /* EDIT EXISTING ENTRY */
+
+    if (entryId !== null) {
+
+        const entry = entries.find(
+            item =>
+                item.id === entryId &&
+                item.section === sectionName
+        );
+
+        if (!entry) return;
+
+        title.value = entry.title;
+        content.value = entry.content;
+
+        const heading =
+            modal.querySelector(".modal-title");
+
+        if (heading) {
+            heading.textContent = "Edit Entry";
+        }
+
+    }
+
+    /* NEW ENTRY */
+
+    else {
+
+        title.value = "";
+        content.value = "";
+
+        const heading =
+            modal.querySelector(".modal-title");
+
+        if (heading) {
+            heading.textContent = "New Entry";
+        }
+    }
+
 
     modal.classList.add("show");
 
@@ -121,25 +180,44 @@ function openEditor(sectionName) {
 }
 
 
+/* =========================
+   CLOSE WRITER
+========================= */
+
 function closeEditor() {
 
-    const modal = document.getElementById("editorModal");
+    const modal =
+        document.getElementById("editorModal");
 
     if (modal) {
         modal.classList.remove("show");
     }
+
+    editingEntryId = null;
+    editingSection = "";
 }
 
 
+/* =========================
+   SAVE / UPDATE ENTRY
+========================= */
+
 function saveEntry() {
 
-    const titleInput = document.getElementById("entryTitle");
-    const contentInput = document.getElementById("entryContent");
+    const titleInput =
+        document.getElementById("entryTitle");
+
+    const contentInput =
+        document.getElementById("entryContent");
 
     if (!titleInput || !contentInput) return;
 
-    const title = titleInput.value.trim();
-    const content = contentInput.value.trim();
+    const title =
+        titleInput.value.trim();
+
+    const content =
+        contentInput.value.trim();
+
 
     if (!content) {
 
@@ -150,36 +228,76 @@ function saveEntry() {
         return;
     }
 
-    const newEntry = {
 
-        id: Date.now(),
+    /* UPDATE EXISTING */
 
-        section: editingSection,
+    if (editingEntryId !== null) {
 
-        title: title || "Untitled",
+        const entry = entries.find(
+            item =>
+                item.id === editingEntryId &&
+                item.section === editingSection
+        );
 
-        content: content,
+        if (entry) {
 
-        date: new Date().toISOString()
-    };
+            entry.title =
+                title || "Untitled";
 
-    entries.unshift(newEntry);
+            entry.content =
+                content;
 
-    localStorage.setItem(
-        "myLittleNotesEntries",
-        JSON.stringify(entries)
-    );
+            localStorage.setItem(
+                "myLittleNotesEntries",
+                JSON.stringify(entries)
+            );
+        }
+
+    }
+
+
+    /* CREATE NEW */
+
+    else {
+
+        const newEntry = {
+
+            id: Date.now(),
+
+            section: editingSection,
+
+            title:
+                title || "Untitled",
+
+            content:
+                content,
+
+            date:
+                new Date().toISOString()
+        };
+
+        entries.unshift(newEntry);
+
+        localStorage.setItem(
+            "myLittleNotesEntries",
+            JSON.stringify(entries)
+        );
+    }
+
+
+    const sectionToShow =
+        editingSection;
 
     closeEditor();
 
-    loadEntries(editingSection);
+    loadEntries(sectionToShow);
 
-    showSection(editingSection);
+    showSection(sectionToShow);
 }
 
 
 /* =========================
-   LOAD ENTRIES
+   LOAD ALL ENTRIES
 ========================= */
 
 function loadAllEntries() {
@@ -190,19 +308,28 @@ function loadAllEntries() {
 }
 
 
+/* =========================
+   LOAD SECTION ENTRIES
+========================= */
+
 function loadEntries(sectionName) {
 
-    const container = document.getElementById(
-        `${sectionName}Entries`
-    );
+    const container =
+        document.getElementById(
+            `${sectionName}Entries`
+        );
 
     if (!container) return;
 
     container.innerHTML = "";
 
-    const sectionEntries = entries.filter(
-        entry => entry.section === sectionName
-    );
+
+    const sectionEntries =
+        entries.filter(
+            entry =>
+                entry.section === sectionName
+        );
+
 
     if (sectionEntries.length === 0) {
 
@@ -217,20 +344,31 @@ function loadEntries(sectionName) {
         return;
     }
 
+
     sectionEntries.forEach((entry, index) => {
 
-        const card = document.createElement("button");
+        const card =
+            document.createElement("button");
 
-        card.className = "entry-card";
+        card.className =
+            "entry-card";
+
+        card.type = "button";
 
         card.onclick = function () {
-            openEntry(sectionName, entry.id);
+
+            openEntry(
+                sectionName,
+                entry.id
+            );
         };
+
 
         const preview =
             entry.content.length > 150
                 ? entry.content.substring(0, 150) + "..."
                 : entry.content;
+
 
         card.innerHTML = `
 
@@ -257,6 +395,7 @@ function loadEntries(sectionName) {
             <div class="entry-arrow">
                 →
             </div>
+
         `;
 
         container.appendChild(card);
@@ -270,94 +409,203 @@ function loadEntries(sectionName) {
 
 function openEntry(sectionName, entryId) {
 
-    const entry = entries.find(
-        item =>
-            item.id === entryId &&
-            item.section === sectionName
-    );
+    const entry =
+        entries.find(
+            item =>
+                item.id === entryId &&
+                item.section === sectionName
+        );
 
     if (!entry) return;
 
-    currentlyViewingEntryId = entryId;
-    currentlyViewingSection = sectionName;
 
-    const modal = document.getElementById("viewModal");
-    const title = document.getElementById("viewTitle");
-    const content = document.getElementById("viewContent");
-    const date = document.getElementById("viewDate");
+    currentlyViewingEntryId =
+        entryId;
 
-    if (!modal || !title || !content || !date) return;
+    currentlyViewingSection =
+        sectionName;
 
-    title.textContent = entry.title;
 
-    date.textContent = formatDate(entry.date);
+    const modal =
+        document.getElementById(
+            "viewModal"
+        );
 
-    content.innerHTML = escapeHTML(entry.content)
-        .split("\n")
-        .map(paragraph => `<p>${paragraph}</p>`)
-        .join("");
+    const title =
+        document.getElementById(
+            "viewTitle"
+        );
 
-    addDeleteButton();
+    const content =
+        document.getElementById(
+            "viewContent"
+        );
+
+    const date =
+        document.getElementById(
+            "viewDate"
+        );
+
+
+    if (
+        !modal ||
+        !title ||
+        !content ||
+        !date
+    ) {
+        return;
+    }
+
+
+    title.textContent =
+        entry.title;
+
+    date.textContent =
+        formatDate(entry.date);
+
+
+    content.innerHTML =
+        escapeHTML(entry.content)
+            .split("\n")
+            .map(
+                paragraph =>
+                    `<p>${paragraph}</p>`
+            )
+            .join("");
+
+
+    createEntryButtons();
 
     modal.classList.add("show");
 }
 
 
 /* =========================
-   DELETE SAVED ENTRY
+   EDIT + DELETE BUTTONS
 ========================= */
 
-function addDeleteButton() {
+function createEntryButtons() {
 
-    const modal = document.getElementById("viewModal");
+    const content =
+        document.getElementById(
+            "viewContent"
+        );
 
-    if (!modal) return;
+    if (!content) return;
 
-    let deleteButton = document.getElementById("deleteEntryButton");
 
-    if (!deleteButton) {
+    let actions =
+        document.getElementById(
+            "entryActions"
+        );
 
-        deleteButton = document.createElement("button");
 
-        deleteButton.id = "deleteEntryButton";
+    if (!actions) {
 
-        deleteButton.type = "button";
+        actions =
+            document.createElement("div");
 
-        deleteButton.textContent = "Delete Entry";
+        actions.id =
+            "entryActions";
 
-        deleteButton.style.cssText = `
-            width: 100%;
-            margin-top: 20px;
-            padding: 13px 18px;
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
-            background: #171717;
-            color: #ffffff;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s ease;
+        actions.style.cssText = `
+            display:flex;
+            gap:10px;
+            margin-top:25px;
         `;
 
-        deleteButton.onmouseover = function () {
-            deleteButton.style.background = "#2a2a2a";
-        };
 
-        deleteButton.onmouseout = function () {
-            deleteButton.style.background = "#171717";
-        };
+        const editButton =
+            document.createElement("button");
 
-        deleteButton.onclick = deleteCurrentEntry;
+        editButton.id =
+            "editEntryButton";
 
-        const content = document.getElementById("viewContent");
+        editButton.type =
+            "button";
 
-        if (content) {
-            content.parentNode.appendChild(deleteButton);
-        } else {
-            modal.appendChild(deleteButton);
-        }
+        editButton.textContent =
+            "✎ Edit";
+
+
+        editButton.style.cssText = `
+            flex:1;
+            padding:13px 16px;
+            border:none;
+            border-radius:12px;
+            background:#242424;
+            color:#ffffff;
+            font-size:14px;
+            cursor:pointer;
+        `;
+
+
+        editButton.onclick =
+            function () {
+
+                const section =
+                    currentlyViewingSection;
+
+                const id =
+                    currentlyViewingEntryId;
+
+                closeView();
+
+                openEditor(
+                    section,
+                    id
+                );
+            };
+
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.id =
+            "deleteEntryButton";
+
+        deleteButton.type =
+            "button";
+
+        deleteButton.textContent =
+            "× Delete";
+
+
+        deleteButton.style.cssText = `
+            flex:1;
+            padding:13px 16px;
+            border:none;
+            border-radius:12px;
+            background:#242424;
+            color:#ffffff;
+            font-size:14px;
+            cursor:pointer;
+        `;
+
+
+        deleteButton.onclick =
+            deleteCurrentEntry;
+
+
+        actions.appendChild(
+            editButton
+        );
+
+        actions.appendChild(
+            deleteButton
+        );
+
+
+        content.parentElement.appendChild(
+            actions
+        );
     }
 }
 
+
+/* =========================
+   DELETE ENTRY
+========================= */
 
 function deleteCurrentEntry() {
 
@@ -368,35 +616,43 @@ function deleteCurrentEntry() {
         return;
     }
 
-    const confirmed = confirm(
-        "Delete this entry permanently?"
-    );
+
+    const confirmed =
+        confirm(
+            "Delete this entry permanently?"
+        );
+
 
     if (!confirmed) return;
 
-    entries = entries.filter(
-        entry =>
-            !(
-                entry.id === currentlyViewingEntryId &&
-                entry.section === currentlyViewingSection
-            )
-    );
+
+    const section =
+        currentlyViewingSection;
+
+
+    entries =
+        entries.filter(
+            entry =>
+                !(
+                    entry.id ===
+                        currentlyViewingEntryId &&
+                    entry.section ===
+                        currentlyViewingSection
+                )
+        );
+
 
     localStorage.setItem(
         "myLittleNotesEntries",
         JSON.stringify(entries)
     );
 
+
     closeView();
 
-    loadEntries(currentlyViewingSection);
+    loadEntries(section);
 
-    if (currentSection === "home") {
-        loadAllEntries();
-    }
-
-    currentlyViewingEntryId = null;
-    currentlyViewingSection = null;
+    loadAllEntries();
 }
 
 
@@ -406,13 +662,17 @@ function deleteCurrentEntry() {
 
 function closeView() {
 
-    const modal = document.getElementById("viewModal");
+    const modal =
+        document.getElementById(
+            "viewModal"
+        );
 
     if (modal) {
         modal.classList.remove("show");
     }
 
     currentlyViewingEntryId = null;
+
     currentlyViewingSection = null;
 }
 
@@ -423,25 +683,31 @@ function closeView() {
 
 function formatDate(dateString) {
 
-    const date = new Date(dateString);
+    const date =
+        new Date(dateString);
 
-    return date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-    });
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
 }
 
 
 /* =========================
-   SECURITY
+   ESCAPE HTML
 ========================= */
 
 function escapeHTML(text) {
 
-    const div = document.createElement("div");
+    const div =
+        document.createElement("div");
 
-    div.textContent = text;
+    div.textContent =
+        text;
 
     return div.innerHTML;
 }
@@ -453,7 +719,10 @@ function escapeHTML(text) {
 
 function addTodo() {
 
-    const input = document.getElementById("todoInput");
+    const input =
+        document.getElementById(
+            "todoInput"
+        );
 
     if (input) {
         input.focus();
@@ -463,16 +732,24 @@ function addTodo() {
 
 function addTodoFromInput() {
 
-    const input = document.getElementById("todoInput");
+    const input =
+        document.getElementById(
+            "todoInput"
+        );
 
     if (!input) return;
 
-    const text = input.value.trim();
+    const text =
+        input.value.trim();
+
 
     if (!text) {
+
         input.focus();
+
         return;
     }
+
 
     todos.unshift({
 
@@ -482,6 +759,7 @@ function addTodoFromInput() {
 
         completed: false
     });
+
 
     saveTodos();
 
@@ -495,11 +773,15 @@ function addTodoFromInput() {
 
 function loadTodos() {
 
-    const list = document.getElementById("todoList");
+    const list =
+        document.getElementById(
+            "todoList"
+        );
 
     if (!list) return;
 
     list.innerHTML = "";
+
 
     if (todos.length === 0) {
 
@@ -514,22 +796,28 @@ function loadTodos() {
         return;
     }
 
+
     todos.forEach(todo => {
 
-        const item = document.createElement("div");
+        const item =
+            document.createElement("div");
 
-        item.className = "todo-item";
+        item.className =
+            "todo-item";
+
 
         if (todo.completed) {
-            item.classList.add("completed");
+            item.classList.add(
+                "completed"
+            );
         }
+
 
         item.innerHTML = `
 
             <button
                 class="todo-check"
                 onclick="toggleTodo(${todo.id})"
-                aria-label="Complete task"
             >
                 ${todo.completed ? "✓" : ""}
             </button>
@@ -541,7 +829,6 @@ function loadTodos() {
             <button
                 class="todo-edit"
                 onclick="editTodo(${todo.id})"
-                aria-label="Edit task"
             >
                 ✎
             </button>
@@ -549,11 +836,11 @@ function loadTodos() {
             <button
                 class="todo-delete"
                 onclick="deleteTodo(${todo.id})"
-                aria-label="Delete task"
             >
                 ×
             </button>
         `;
+
 
         list.appendChild(item);
     });
@@ -562,13 +849,15 @@ function loadTodos() {
 
 function toggleTodo(id) {
 
-    const todo = todos.find(
-        item => item.id === id
-    );
+    const todo =
+        todos.find(
+            item => item.id === id
+        );
 
     if (!todo) return;
 
-    todo.completed = !todo.completed;
+    todo.completed =
+        !todo.completed;
 
     saveTodos();
 
@@ -578,24 +867,33 @@ function toggleTodo(id) {
 
 function editTodo(id) {
 
-    const todo = todos.find(
-        item => item.id === id
-    );
+    const todo =
+        todos.find(
+            item => item.id === id
+        );
 
     if (!todo) return;
 
-    const newText = prompt(
-        "Edit your task:",
-        todo.text
-    );
+
+    const newText =
+        prompt(
+            "Edit your task:",
+            todo.text
+        );
+
 
     if (newText === null) return;
 
-    const cleaned = newText.trim();
+
+    const cleaned =
+        newText.trim();
+
 
     if (!cleaned) return;
 
-    todo.text = cleaned;
+
+    todo.text =
+        cleaned;
 
     saveTodos();
 
@@ -605,9 +903,10 @@ function editTodo(id) {
 
 function deleteTodo(id) {
 
-    todos = todos.filter(
-        item => item.id !== id
-    );
+    todos =
+        todos.filter(
+            item => item.id !== id
+        );
 
     saveTodos();
 
@@ -634,13 +933,16 @@ function saveMood(mood) {
 
         mood: mood,
 
-        date: new Date().toISOString()
+        date:
+            new Date().toISOString()
     });
+
 
     localStorage.setItem(
         "myLittleNotesMoods",
         JSON.stringify(moods)
     );
+
 
     loadMoods();
 }
@@ -649,11 +951,14 @@ function saveMood(mood) {
 function loadMoods() {
 
     const history =
-        document.getElementById("moodHistory");
+        document.getElementById(
+            "moodHistory"
+        );
 
     if (!history) return;
 
     history.innerHTML = "";
+
 
     if (moods.length === 0) {
 
@@ -666,27 +971,33 @@ function loadMoods() {
         return;
     }
 
-    moods.slice(0, 10).forEach(item => {
 
-        const row =
-            document.createElement("div");
+    moods.slice(0, 10)
+        .forEach(item => {
 
-        row.className =
-            "mood-history-item";
+            const row =
+                document.createElement(
+                    "div"
+                );
 
-        row.innerHTML = `
+            row.className =
+                "mood-history-item";
 
-            <span>
-                ${escapeHTML(item.mood)}
-            </span>
 
-            <small>
-                ${formatDate(item.date)}
-            </small>
-        `;
+            row.innerHTML = `
 
-        history.appendChild(row);
-    });
+                <span>
+                    ${escapeHTML(item.mood)}
+                </span>
+
+                <small>
+                    ${formatDate(item.date)}
+                </small>
+            `;
+
+
+            history.appendChild(row);
+        });
 }
 
 
@@ -700,15 +1011,20 @@ function toggleTheme() {
         "light-mode"
     );
 
+
     const isLight =
         document.body.classList.contains(
             "light-mode"
         );
 
+
     localStorage.setItem(
         "myLittleNotesTheme",
-        isLight ? "light" : "dark"
+        isLight
+            ? "light"
+            : "dark"
     );
+
 
     updateThemeIcon();
 }
@@ -721,12 +1037,14 @@ function loadTheme() {
             "myLittleNotesTheme"
         );
 
+
     if (savedTheme === "light") {
 
         document.body.classList.add(
             "light-mode"
         );
     }
+
 
     updateThemeIcon();
 }
@@ -739,6 +1057,7 @@ function updateThemeIcon() {
             "light-mode"
         );
 
+
     document
         .querySelectorAll(
             ".theme-button, .mobile-theme-button"
@@ -746,26 +1065,34 @@ function updateThemeIcon() {
         .forEach(button => {
 
             button.textContent =
-                isLight ? "☀" : "☾";
+                isLight
+                    ? "☀"
+                    : "☾";
         });
 }
 
 
 /* =========================
-   CLEAR ALL DATA
+   CLEAR EVERYTHING
 ========================= */
 
 function clearAllData() {
 
-    const confirmed = confirm(
-        "Are you sure you want to remove all your saved notes, tasks and moods?"
-    );
+    const confirmed =
+        confirm(
+            "Are you sure you want to remove all your saved notes, tasks and moods?"
+        );
+
 
     if (!confirmed) return;
 
+
     entries = [];
+
     todos = [];
+
     moods = [];
+
 
     localStorage.removeItem(
         "myLittleNotesEntries"
@@ -779,11 +1106,13 @@ function clearAllData() {
         "myLittleNotesMoods"
     );
 
+
     loadAllEntries();
 
     loadTodos();
 
     loadMoods();
+
 
     alert(
         "Your saved data has been cleared."
@@ -809,11 +1138,19 @@ document.addEventListener(
                 "viewModal"
             );
 
-        if (event.target === editorModal) {
+
+        if (
+            event.target ===
+            editorModal
+        ) {
             closeEditor();
         }
 
-        if (event.target === viewModal) {
+
+        if (
+            event.target ===
+            viewModal
+        ) {
             closeView();
         }
     }
@@ -835,9 +1172,11 @@ document.addEventListener(
             closeView();
         }
 
+
         if (
             event.key === "Enter" &&
-            event.target.id === "todoInput"
+            event.target.id ===
+                "todoInput"
         ) {
 
             addTodoFromInput();
@@ -847,7 +1186,7 @@ document.addEventListener(
 
 
 /* =========================
-   START APP
+   START
 ========================= */
 
 document.addEventListener(
