@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>My Little Notes</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-symbol">✦</div>
+            <div>
+                <h1>My Little Notes</h1>
+                <p>a quiet little space</p>
+            </div>
+        </div>
+
+        <button class="close-sidebar" onclick="toggleSidebar()" aria-label="Close menu">×</button>
+
+        <nav class="main-nav">
+            <button class="nav-item active" onclick="showSection('home')">
+                <i class="fa-solid fa-house"></i><span>Home</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('journal')">
+                <i class="fa-solid fa-pen"></i><span>Journal</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('todo')">
+                <i class="fa-solid fa-check"></i><span>To Do List</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('notes')">
+                <i class="fa-regular fa-note-sticky"></i><span>Notes</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('hobbies')">
+                <i class="fa-solid fa-heart"></i><span>Hobbies</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('mood')">
+                <i class="fa-regular fa-face-smile"></i><span>Mood</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('bookshelf')">
+                <i class="fa-solid fa-book"></i><span>Bookshelf</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('gratitude')">
+                <i class="fa-regular fa-star"></i><span>Gratitude</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('ideas')">
+                <i class="fa-regular fa-lightbulb"></i><span>Ideas</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('planner')">
+                <i class="fa-regular fa-calendar"></i><span>Planner</span>
+            </button>
+
+            <button class="nav-item" onclick="showSection('settings')">
+                <i class="fa-solid fa-gear"></i><span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>write • remember • create</p>
+        </div>
+    </aside>
+
+    <!-- MOBILE TOP BAR -->
+    <header class="mobile-topbar">
+        <button class="menu-button" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <span>My Little Notes</span>
+        <button class="mobile-theme-button" onclick="toggleTheme()" aria-label="Change theme">☾</button>
+    </header>
+
+    <main class="main-content">
+
+        <!-- HOME -->
+        <section id="home" class="page-section active-section">
+            <div class="hero">
+                <div>
+                    <p class="eyebrow">WELCOME TO YOUR LITTLE CORNER</p>
+                    <h2>My Little Notes<span>♡</span></h2>
+                    <p class="hero-text">A quiet place for thoughts, plans, memories and little things worth keeping.</p>
+                </div>
+                <button class="theme-button" onclick="toggleTheme()" title="Change theme">☾</button>
+            </div>
+
+            <div class="today-card">
+                <span id="todayDate">Today</span>
+                <span>Take a breath. Write something.</span>
+            </div>
+
+            <div class="home-grid">
+                <button class="home-card large-card" onclick="showSection('journal')">
+                    <span class="card-icon">✎</span>
+                    <h3>Journal</h3>
+                    <p>Write whatever is on your mind.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('todo')">
+                    <span class="card-icon">☑</span>
+                    <h3>To Do List</h3>
+                    <p>Keep your little plans together.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('notes')">
+                    <span class="card-icon">▤</span>
+                    <h3>Notes</h3>
+                    <p>Save ideas and useful thoughts.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('hobbies')">
+                    <span class="card-icon">♡</span>
+                    <h3>Hobbies</h3>
+                    <p>Things you enjoy.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('mood')">
+                    <span class="card-icon">☼</span>
+                    <h3>Mood</h3>
+                    <p>Check in with yourself.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('bookshelf')">
+                    <span class="card-icon">▥</span>
+                    <h3>Bookshelf</h3>
+                    <p>Keep track of books.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('gratitude')">
+                    <span class="card-icon">✦</span>
+                    <h3>Gratitude</h3>
+                    <p>Little things worth remembering.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('ideas')">
+                    <span class="card-icon">☼</span>
+                    <h3>Ideas</h3>
+                    <p>Random thoughts · big ideas.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="home-card" onclick="showSection('planner')">
+                    <span class="card-icon">□</span>
+                    <h3>Planner</h3>
+                    <p>Plan your days gently.</p>
+                    <span class="card-arrow">→</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- JOURNAL -->
+        <section id="journal" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Journal</h2>
+                    <p>Your words, your space.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('journal')">+</button>
+            </div>
+            <div id="journalEntries" class="entries-container"></div>
+        </section>
+
+        <!-- TO DO -->
+        <section id="todo" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>To Do List</h2>
+                    <p>Small steps still count.</p>
+                </div>
+                <button class="add-button" onclick="addTodo()">+</button>
+            </div>
+            <div class="todo-box">
+                <div class="todo-input-row">
+                    <input id="todoInput" type="text" placeholder="Write a task..." autocomplete="off">
+                    <button onclick="addTodoFromInput()">Add</button>
+                </div>
+                <div id="todoList"></div>
+            </div>
+        </section>
+
+        <!-- NOTES -->
+        <section id="notes" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Notes</h2>
+                    <p>Keep the useful little things.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('notes')">+</button>
+            </div>
+            <div id="notesEntries" class="entries-container"></div>
+        </section>
+
+        <!-- HOBBIES -->
+        <section id="hobbies" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Hobbies</h2>
+                    <p>Things that make time feel lighter.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('hobbies')">+</button>
+            </div>
+            <div id="hobbiesEntries" class="entries-container"></div>
+        </section>
+
+        <!-- MOOD -->
+        <section id="mood" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Mood</h2>
+                    <p>A tiny check-in for today.</p>
+                </div>
+            </div>
+
+            <div class="mood-card">
+                <h3>How are you feeling?</h3>
+                <div class="mood-picker">
+                    <button onclick="saveMood('Happy')">♡<small>Happy</small></button>
+                    <button onclick="saveMood('Calm')">☁<small>Calm</small></button>
+                    <button onclick="saveMood('Tired')">◌<small>Tired</small></button>
+                    <button onclick="saveMood('Excited')">✦<small>Excited</small></button>
+                    <button onclick="saveMood('Thoughtful')">☾<small>Thoughtful</small></button>
+                </div>
+                <div id="moodHistory"></div>
+            </div>
+        </section>
+
+        <!-- BOOKSHELF -->
+        <section id="bookshelf" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Bookshelf</h2>
+                    <p>Books you have read or want to read.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('bookshelf')">+</button>
+            </div>
+            <div id="bookshelfEntries" class="entries-container"></div>
+        </section>
+
+        <!-- GRATITUDE -->
+        <section id="gratitude" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Gratitude</h2>
+                    <p>Little things worth remembering.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('gratitude')">+</button>
+            </div>
+            <div id="gratitudeEntries" class="entries-container"></div>
+        </section>
+
+        <!-- IDEAS -->
+        <section id="ideas" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Ideas</h2>
+                    <p>Random thoughts · Big ideas.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('ideas')">+</button>
+            </div>
+            <div id="ideasEntries" class="entries-container"></div>
+        </section>
+
+        <!-- PLANNER -->
+        <section id="planner" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Planner</h2>
+                    <p>Make room for what matters.</p>
+                </div>
+                <button class="add-button" onclick="openEditor('planner')">+</button>
+            </div>
+            <div id="plannerEntries" class="entries-container"></div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section id="settings" class="page-section">
+            <div class="section-header">
+                <button class="back-button" onclick="showSection('home')">←</button>
+                <div>
+                    <h2>Settings</h2>
+                    <p>Make your little space yours.</p>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <button onclick="toggleTheme()">
+                    <span>☾</span>
+                    <div><strong>Change theme</strong><small>Switch between dark and light</small></div>
+                </button>
+
+                <button onclick="clearAllData()">
+                    <span>⌫</span>
+                    <div><strong>Clear saved data</strong><small>Remove saved notes, tasks and moods</small></div>
+                </button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- WRITING MODAL -->
+<div id="editorModal" class="modal">
+    <div class="modal-content editor-modal-content">
+        <button class="modal-close" onclick="closeEditor()">×</button>
+
+        <p class="eyebrow">WRITE SOMETHING</p>
+        <input id="entryTitle" class="entry-title-input" type="text" placeholder="Give it a title..." autocomplete="off">
+        <textarea id="entryContent" class="entry-content-input" placeholder="Start writing here..."></textarea>
+
+        <div class="editor-actions">
+            <button class="cancel-button" onclick="closeEditor()">Cancel</button>
+            <button class="save-button" onclick="saveEntry()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW SAVED ENTRY -->
+<div id="viewModal" class="modal">
+    <div class="modal-content view-modal-content">
+        <button class="modal-close" onclick="closeView()">×</button>
+        <p id="viewDate" class="entry-date"></p>
+        <h2 id="viewTitle"></h2>
+        <div id="viewContent" class="view-text"></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js")
+            .then(function () {
+                console.log("My Little Notes is ready ♡");
+            })
+            .catch(function (error) {
+                console.log("Service worker error:", error);
+            });
+    });
+}
+</script>
+
+</body>
+</html>
