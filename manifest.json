@@ -1,7 +1,7 @@
 {
-  "name": "My Little Notes",
-  "short_name": "Little Notes",
-  "description": "A little space for notes, journals, ideas, moods and everyday thoughts.",
+  "name": "Obsidian",
+  "short_name": "Obsidian",
+  "description": "A dark, quiet space for notes, journals, ideas and thoughts.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#050505",
