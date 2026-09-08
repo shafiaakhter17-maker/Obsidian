@@ -15,7 +15,16 @@ const sectionNames = {
     planner: "Planner"
 };
 
+let currentlyViewingEntryId = null;
+let currentlyViewingSection = null;
+
+
+/* =========================
+   SECTION NAVIGATION
+========================= */
+
 function showSection(sectionName) {
+
     document.querySelectorAll(".page-section").forEach(section => {
         section.classList.remove("active-section");
     });
@@ -59,7 +68,9 @@ function showSection(sectionName) {
     });
 }
 
+
 function toggleSidebar() {
+
     const sidebar = document.getElementById("sidebar");
 
     if (!sidebar) return;
@@ -67,7 +78,9 @@ function toggleSidebar() {
     sidebar.classList.toggle("sidebar-open");
 }
 
+
 function showTodayDate() {
+
     const dateElement = document.getElementById("todayDate");
 
     if (!dateElement) return;
@@ -82,11 +95,13 @@ function showTodayDate() {
     });
 }
 
+
 /* =========================
-   WRITING / NOTES
+   WRITING EDITOR
 ========================= */
 
 function openEditor(sectionName) {
+
     editingSection = sectionName;
 
     const modal = document.getElementById("editorModal");
@@ -105,7 +120,9 @@ function openEditor(sectionName) {
     }, 100);
 }
 
+
 function closeEditor() {
+
     const modal = document.getElementById("editorModal");
 
     if (modal) {
@@ -113,7 +130,9 @@ function closeEditor() {
     }
 }
 
+
 function saveEntry() {
+
     const titleInput = document.getElementById("entryTitle");
     const contentInput = document.getElementById("entryContent");
 
@@ -123,16 +142,24 @@ function saveEntry() {
     const content = contentInput.value.trim();
 
     if (!content) {
+
         alert("Write something before saving ♡");
+
         contentInput.focus();
+
         return;
     }
 
     const newEntry = {
+
         id: Date.now(),
+
         section: editingSection,
+
         title: title || "Untitled",
+
         content: content,
+
         date: new Date().toISOString()
     };
 
@@ -150,13 +177,21 @@ function saveEntry() {
     showSection(editingSection);
 }
 
+
+/* =========================
+   LOAD ENTRIES
+========================= */
+
 function loadAllEntries() {
+
     Object.keys(sectionNames).forEach(section => {
         loadEntries(section);
     });
 }
 
+
 function loadEntries(sectionName) {
+
     const container = document.getElementById(
         `${sectionName}Entries`
     );
@@ -170,6 +205,7 @@ function loadEntries(sectionName) {
     );
 
     if (sectionEntries.length === 0) {
+
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">✦</div>
@@ -182,6 +218,7 @@ function loadEntries(sectionName) {
     }
 
     sectionEntries.forEach((entry, index) => {
+
         const card = document.createElement("button");
 
         card.className = "entry-card";
@@ -196,11 +233,13 @@ function loadEntries(sectionName) {
                 : entry.content;
 
         card.innerHTML = `
+
             <div class="entry-number">
                 ${String(index + 1).padStart(2, "0")}
             </div>
 
             <div class="entry-info">
+
                 <span class="entry-date">
                     ${formatDate(entry.date)}
                 </span>
@@ -212,6 +251,7 @@ function loadEntries(sectionName) {
                 <p>
                     ${escapeHTML(preview)}
                 </p>
+
             </div>
 
             <div class="entry-arrow">
@@ -223,11 +263,13 @@ function loadEntries(sectionName) {
     });
 }
 
+
 /* =========================
-   VIEW SAVED ENTRY
+   OPEN SAVED ENTRY
 ========================= */
 
 function openEntry(sectionName, entryId) {
+
     const entry = entries.find(
         item =>
             item.id === entryId &&
@@ -235,6 +277,9 @@ function openEntry(sectionName, entryId) {
     );
 
     if (!entry) return;
+
+    currentlyViewingEntryId = entryId;
+    currentlyViewingSection = sectionName;
 
     const modal = document.getElementById("viewModal");
     const title = document.getElementById("viewTitle");
@@ -252,18 +297,132 @@ function openEntry(sectionName, entryId) {
         .map(paragraph => `<p>${paragraph}</p>`)
         .join("");
 
+    addDeleteButton();
+
     modal.classList.add("show");
 }
 
+
+/* =========================
+   DELETE SAVED ENTRY
+========================= */
+
+function addDeleteButton() {
+
+    const modal = document.getElementById("viewModal");
+
+    if (!modal) return;
+
+    let deleteButton = document.getElementById("deleteEntryButton");
+
+    if (!deleteButton) {
+
+        deleteButton = document.createElement("button");
+
+        deleteButton.id = "deleteEntryButton";
+
+        deleteButton.type = "button";
+
+        deleteButton.textContent = "Delete Entry";
+
+        deleteButton.style.cssText = `
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            background: #171717;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        `;
+
+        deleteButton.onmouseover = function () {
+            deleteButton.style.background = "#2a2a2a";
+        };
+
+        deleteButton.onmouseout = function () {
+            deleteButton.style.background = "#171717";
+        };
+
+        deleteButton.onclick = deleteCurrentEntry;
+
+        const content = document.getElementById("viewContent");
+
+        if (content) {
+            content.parentNode.appendChild(deleteButton);
+        } else {
+            modal.appendChild(deleteButton);
+        }
+    }
+}
+
+
+function deleteCurrentEntry() {
+
+    if (
+        currentlyViewingEntryId === null ||
+        currentlyViewingSection === null
+    ) {
+        return;
+    }
+
+    const confirmed = confirm(
+        "Delete this entry permanently?"
+    );
+
+    if (!confirmed) return;
+
+    entries = entries.filter(
+        entry =>
+            !(
+                entry.id === currentlyViewingEntryId &&
+                entry.section === currentlyViewingSection
+            )
+    );
+
+    localStorage.setItem(
+        "myLittleNotesEntries",
+        JSON.stringify(entries)
+    );
+
+    closeView();
+
+    loadEntries(currentlyViewingSection);
+
+    if (currentSection === "home") {
+        loadAllEntries();
+    }
+
+    currentlyViewingEntryId = null;
+    currentlyViewingSection = null;
+}
+
+
+/* =========================
+   CLOSE VIEW
+========================= */
+
 function closeView() {
+
     const modal = document.getElementById("viewModal");
 
     if (modal) {
         modal.classList.remove("show");
     }
+
+    currentlyViewingEntryId = null;
+    currentlyViewingSection = null;
 }
 
+
+/* =========================
+   DATE
+========================= */
+
 function formatDate(dateString) {
+
     const date = new Date(dateString);
 
     return date.toLocaleDateString("en-US", {
@@ -273,7 +432,13 @@ function formatDate(dateString) {
     });
 }
 
+
+/* =========================
+   SECURITY
+========================= */
+
 function escapeHTML(text) {
+
     const div = document.createElement("div");
 
     div.textContent = text;
@@ -281,11 +446,13 @@ function escapeHTML(text) {
     return div.innerHTML;
 }
 
+
 /* =========================
    TO-DO LIST
 ========================= */
 
 function addTodo() {
+
     const input = document.getElementById("todoInput");
 
     if (input) {
@@ -293,7 +460,9 @@ function addTodo() {
     }
 }
 
+
 function addTodoFromInput() {
+
     const input = document.getElementById("todoInput");
 
     if (!input) return;
@@ -306,8 +475,11 @@ function addTodoFromInput() {
     }
 
     todos.unshift({
+
         id: Date.now(),
+
         text: text,
+
         completed: false
     });
 
@@ -320,7 +492,9 @@ function addTodoFromInput() {
     loadTodos();
 }
 
+
 function loadTodos() {
+
     const list = document.getElementById("todoList");
 
     if (!list) return;
@@ -328,6 +502,7 @@ function loadTodos() {
     list.innerHTML = "";
 
     if (todos.length === 0) {
+
         list.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">☑</div>
@@ -340,6 +515,7 @@ function loadTodos() {
     }
 
     todos.forEach(todo => {
+
         const item = document.createElement("div");
 
         item.className = "todo-item";
@@ -349,6 +525,7 @@ function loadTodos() {
         }
 
         item.innerHTML = `
+
             <button
                 class="todo-check"
                 onclick="toggleTodo(${todo.id})"
@@ -382,8 +559,12 @@ function loadTodos() {
     });
 }
 
+
 function toggleTodo(id) {
-    const todo = todos.find(item => item.id === id);
+
+    const todo = todos.find(
+        item => item.id === id
+    );
 
     if (!todo) return;
 
@@ -394,8 +575,12 @@ function toggleTodo(id) {
     loadTodos();
 }
 
+
 function editTodo(id) {
-    const todo = todos.find(item => item.id === id);
+
+    const todo = todos.find(
+        item => item.id === id
+    );
 
     if (!todo) return;
 
@@ -417,7 +602,9 @@ function editTodo(id) {
     loadTodos();
 }
 
+
 function deleteTodo(id) {
+
     todos = todos.filter(
         item => item.id !== id
     );
@@ -427,20 +614,26 @@ function deleteTodo(id) {
     loadTodos();
 }
 
+
 function saveTodos() {
+
     localStorage.setItem(
         "myLittleNotesTodos",
         JSON.stringify(todos)
     );
 }
 
+
 /* =========================
    MOOD
 ========================= */
 
 function saveMood(mood) {
+
     moods.unshift({
+
         mood: mood,
+
         date: new Date().toISOString()
     });
 
@@ -452,7 +645,9 @@ function saveMood(mood) {
     loadMoods();
 }
 
+
 function loadMoods() {
+
     const history =
         document.getElementById("moodHistory");
 
@@ -461,6 +656,7 @@ function loadMoods() {
     history.innerHTML = "";
 
     if (moods.length === 0) {
+
         history.innerHTML = `
             <div class="mood-empty">
                 Your mood history will appear here ♡
@@ -471,11 +667,15 @@ function loadMoods() {
     }
 
     moods.slice(0, 10).forEach(item => {
-        const row = document.createElement("div");
 
-        row.className = "mood-history-item";
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "mood-history-item";
 
         row.innerHTML = `
+
             <span>
                 ${escapeHTML(item.mood)}
             </span>
@@ -489,15 +689,21 @@ function loadMoods() {
     });
 }
 
+
 /* =========================
    THEME
 ========================= */
 
 function toggleTheme() {
-    document.body.classList.toggle("light-mode");
+
+    document.body.classList.toggle(
+        "light-mode"
+    );
 
     const isLight =
-        document.body.classList.contains("light-mode");
+        document.body.classList.contains(
+            "light-mode"
+        );
 
     localStorage.setItem(
         "myLittleNotesTheme",
@@ -507,36 +713,50 @@ function toggleTheme() {
     updateThemeIcon();
 }
 
+
 function loadTheme() {
+
     const savedTheme =
-        localStorage.getItem("myLittleNotesTheme");
+        localStorage.getItem(
+            "myLittleNotesTheme"
+        );
 
     if (savedTheme === "light") {
-        document.body.classList.add("light-mode");
+
+        document.body.classList.add(
+            "light-mode"
+        );
     }
 
     updateThemeIcon();
 }
 
+
 function updateThemeIcon() {
+
     const isLight =
-        document.body.classList.contains("light-mode");
+        document.body.classList.contains(
+            "light-mode"
+        );
 
     document
         .querySelectorAll(
             ".theme-button, .mobile-theme-button"
         )
         .forEach(button => {
+
             button.textContent =
                 isLight ? "☀" : "☾";
         });
 }
 
+
 /* =========================
-   CLEAR DATA
+   CLEAR ALL DATA
 ========================= */
 
 function clearAllData() {
+
     const confirmed = confirm(
         "Are you sure you want to remove all your saved notes, tasks and moods?"
     );
@@ -560,49 +780,71 @@ function clearAllData() {
     );
 
     loadAllEntries();
+
     loadTodos();
+
     loadMoods();
 
-    alert("Your saved data has been cleared.");
+    alert(
+        "Your saved data has been cleared."
+    );
 }
 
+
 /* =========================
-   MODALS
+   MODAL CLICK
 ========================= */
 
-document.addEventListener("click", function (event) {
-    const editorModal =
-        document.getElementById("editorModal");
+document.addEventListener(
+    "click",
+    function (event) {
 
-    const viewModal =
-        document.getElementById("viewModal");
+        const editorModal =
+            document.getElementById(
+                "editorModal"
+            );
 
-    if (event.target === editorModal) {
-        closeEditor();
+        const viewModal =
+            document.getElementById(
+                "viewModal"
+            );
+
+        if (event.target === editorModal) {
+            closeEditor();
+        }
+
+        if (event.target === viewModal) {
+            closeView();
+        }
     }
+);
 
-    if (event.target === viewModal) {
-        closeView();
-    }
-});
 
 /* =========================
    KEYBOARD
 ========================= */
 
-document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
-        closeEditor();
-        closeView();
-    }
+document.addEventListener(
+    "keydown",
+    function (event) {
 
-    if (
-        event.key === "Enter" &&
-        event.target.id === "todoInput"
-    ) {
-        addTodoFromInput();
+        if (event.key === "Escape") {
+
+            closeEditor();
+
+            closeView();
+        }
+
+        if (
+            event.key === "Enter" &&
+            event.target.id === "todoInput"
+        ) {
+
+            addTodoFromInput();
+        }
     }
-});
+);
+
 
 /* =========================
    START APP
@@ -611,6 +853,7 @@ document.addEventListener("keydown", function (event) {
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
         showTodayDate();
 
         loadTheme();
