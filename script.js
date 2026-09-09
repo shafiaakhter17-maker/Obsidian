@@ -2,8 +2,6 @@
    OBSIDIAN — MAIN JAVASCRIPT
 ===================================================== */
 
-"use strict";
-
 
 /* =====================================================
    STORAGE
@@ -20,21 +18,20 @@ const THEME_KEY = "obsidian_theme";
 ===================================================== */
 
 let currentSection = "home";
+
 let editingSection = null;
 let editingEntryId = null;
 
 
 /* =====================================================
-   STORAGE HELPERS
+   BASIC HELPERS
 ===================================================== */
 
 function getEntries() {
     try {
-        return JSON.parse(
-            localStorage.getItem(ENTRY_KEY)
-        ) || {};
+        return JSON.parse(localStorage.getItem(ENTRY_KEY)) || [];
     } catch {
-        return {};
+        return [];
     }
 }
 
@@ -49,9 +46,7 @@ function saveEntries(entries) {
 
 function getTodos() {
     try {
-        return JSON.parse(
-            localStorage.getItem(TODO_KEY)
-        ) || [];
+        return JSON.parse(localStorage.getItem(TODO_KEY)) || [];
     } catch {
         return [];
     }
@@ -68,9 +63,7 @@ function saveTodos(todos) {
 
 function getMoods() {
     try {
-        return JSON.parse(
-            localStorage.getItem(MOOD_KEY)
-        ) || [];
+        return JSON.parse(localStorage.getItem(MOOD_KEY)) || [];
     } catch {
         return [];
     }
@@ -86,35 +79,24 @@ function saveMoods(moods) {
 
 
 /* =====================================================
-   NAVIGATION
+   SECTION NAVIGATION
 ===================================================== */
 
-function showSection(section) {
+function showSection(sectionName) {
 
-    const target =
-        document.getElementById(section);
+    const target = document.getElementById(sectionName);
 
     if (!target) {
-        console.error(
-            "Section not found:",
-            section
-        );
+        console.error("Section not found:", sectionName);
         return;
     }
 
 
-    currentSection = section;
-
-
     /* Hide every section */
 
-    document
-        .querySelectorAll(".page-section")
-        .forEach(function(page) {
-
-            page.classList.remove("active");
-
-        });
+    document.querySelectorAll(".page-section").forEach(section => {
+        section.classList.remove("active");
+    });
 
 
     /* Show selected section */
@@ -124,65 +106,42 @@ function showSection(section) {
 
     /* Update navigation */
 
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(function(button) {
-
-            button.classList.remove("active");
-
-        });
+    document.querySelectorAll(".nav-button").forEach(button => {
+        button.classList.remove("active");
+    });
 
 
-    const activeButton =
-        document.querySelector(
-            '.nav-item[data-section="' +
-            section +
-            '"]'
-        );
-
+    const activeButton = document.querySelector(
+        `.nav-button[onclick="showSection('${sectionName}')"]`
+    );
 
     if (activeButton) {
         activeButton.classList.add("active");
     }
 
 
-    /* Update heading */
+    currentSection = sectionName;
 
-    const names = {
 
-        home: "Welcome back",
+    /* Update page title */
 
+    const titles = {
+        home: "Obsidian",
         journal: "Journal",
-
         todo: "To-Do List",
-
         notes: "Notes",
-
         hobbies: "Hobbies",
-
         mood: "Mood",
-
         bookshelf: "Bookshelf",
-
         gratitude: "Gratitude",
-
         ideas: "Ideas",
-
         planner: "Planner",
-
         settings: "Settings"
-
     };
 
 
-    const title =
-        document.getElementById("page-title");
-
-
-    if (title) {
-        title.textContent =
-            names[section] || "Obsidian";
-    }
+    document.title =
+        `${titles[sectionName] || "Obsidian"} — Obsidian`;
 
 
     /* Close mobile sidebar */
@@ -190,43 +149,49 @@ function showSection(section) {
     closeSidebar();
 
 
-    /* Refresh section data */
+    /* Refresh content */
 
-    if (
-        section === "journal" ||
-        section === "notes" ||
-        section === "hobbies" ||
-        section === "bookshelf" ||
-        section === "gratitude" ||
-        section === "ideas" ||
-        section === "planner"
-    ) {
-        loadEntries(section);
+    if (sectionName !== "home" &&
+        sectionName !== "todo" &&
+        sectionName !== "mood" &&
+        sectionName !== "settings") {
+
+        loadEntries(sectionName);
     }
 
 
-    if (section === "todo") {
+    if (sectionName === "todo") {
         loadTodos();
     }
 
 
-    if (section === "mood") {
+    if (sectionName === "mood") {
         loadMoods();
     }
 }
 
 
 /* =====================================================
-   MOBILE SIDEBAR
+   SIDEBAR
 ===================================================== */
 
 function toggleSidebar() {
 
     const sidebar =
-        document.querySelector(".sidebar");
+        document.getElementById("sidebar");
 
-    if (sidebar) {
-        sidebar.classList.toggle("open");
+    const overlay =
+        document.getElementById("sidebarOverlay");
+
+
+    if (!sidebar) return;
+
+
+    sidebar.classList.toggle("open");
+
+
+    if (overlay) {
+        overlay.classList.toggle("show");
     }
 }
 
@@ -234,78 +199,115 @@ function toggleSidebar() {
 function closeSidebar() {
 
     const sidebar =
-        document.querySelector(".sidebar");
+        document.getElementById("sidebar");
+
+    const overlay =
+        document.getElementById("sidebarOverlay");
+
 
     if (sidebar) {
         sidebar.classList.remove("open");
+    }
+
+
+    if (overlay) {
+        overlay.classList.remove("show");
     }
 }
 
 
 /* =====================================================
-   EDITOR
+   ENTRY EDITOR
 ===================================================== */
 
-function openEditor(section, id = null) {
+function openEditor(sectionName, entryId = null) {
 
     const modal =
-        document.getElementById("editor-modal");
+        document.getElementById("editorModal");
 
     const titleInput =
-        document.getElementById("entry-title");
+        document.getElementById("entryTitle");
 
     const contentInput =
-        document.getElementById("entry-content");
+        document.getElementById("entryContent");
+
+    const editorTitle =
+        document.getElementById("editorTitle");
+
+    const editorEyebrow =
+        document.getElementById("editorEyebrow");
 
 
-    if (
-        !modal ||
+    if (!modal ||
         !titleInput ||
-        !contentInput
-    ) {
-        console.error(
-            "Editor elements are missing."
-        );
-
+        !contentInput) {
         return;
     }
 
 
-    editingSection = section;
-    editingEntryId = id;
-
-
-    /* Empty by default */
-
-    titleInput.value = "";
-    contentInput.value = "";
+    editingSection = sectionName;
+    editingEntryId = entryId;
 
 
     /* Editing an existing entry */
 
-    if (id !== null) {
+    if (entryId) {
 
         const entries = getEntries();
 
-        const list =
-            entries[section] || [];
+        const entry = entries.find(
+            item =>
+                item.id === entryId &&
+                item.section === sectionName
+        );
 
 
-        const entry =
-            list.find(function(item) {
-
-                return item.id === id;
-
-            });
+        if (!entry) return;
 
 
-        if (entry) {
+        titleInput.value = entry.title;
+        contentInput.value = entry.content;
 
-            titleInput.value =
-                entry.title || "";
 
-            contentInput.value =
-                entry.content || "";
+        if (editorTitle) {
+            editorTitle.textContent = "Edit";
+        }
+
+
+        if (editorEyebrow) {
+            editorEyebrow.textContent = "edit entry";
+        }
+
+    }
+
+
+    /* Creating a new entry */
+
+    else {
+
+        titleInput.value = "";
+        contentInput.value = "";
+
+
+        const names = {
+            journal: "Journal",
+            notes: "Note",
+            hobbies: "Hobby",
+            bookshelf: "Book",
+            gratitude: "Gratitude",
+            ideas: "Idea",
+            planner: "Plan"
+        };
+
+
+        if (editorTitle) {
+            editorTitle.textContent =
+                `New ${names[sectionName] || "Entry"}`;
+        }
+
+
+        if (editorEyebrow) {
+            editorEyebrow.textContent = "new entry";
         }
     }
 
@@ -313,10 +315,8 @@ function openEditor(section, id = null) {
     modal.classList.add("show");
 
 
-    setTimeout(function() {
-
+    setTimeout(() => {
         titleInput.focus();
-
     }, 100);
 }
 
@@ -324,7 +324,8 @@ function openEditor(section, id = null) {
 function closeEditor() {
 
     const modal =
-        document.getElementById("editor-modal");
+        document.getElementById("editorModal");
+
 
     if (modal) {
         modal.classList.remove("show");
@@ -343,16 +344,13 @@ function closeEditor() {
 function saveEntry() {
 
     const titleInput =
-        document.getElementById("entry-title");
+        document.getElementById("entryTitle");
 
     const contentInput =
-        document.getElementById("entry-content");
+        document.getElementById("entryContent");
 
 
-    if (
-        !titleInput ||
-        !contentInput
-    ) {
+    if (!titleInput || !contentInput) {
         return;
     }
 
@@ -366,55 +364,34 @@ function saveEntry() {
 
     if (!title && !content) {
 
-        alert(
-            "Write something first."
-        );
+        alert("Please write something first.");
 
         return;
     }
 
 
-    const entries =
-        getEntries();
-
-
-    if (!entries[editingSection]) {
-
-        entries[editingSection] = [];
-
-    }
+    const entries = getEntries();
 
 
     /* EDIT */
 
-    if (editingEntryId !== null) {
+    if (editingEntryId) {
 
-        const index =
-            entries[editingSection]
-                .findIndex(function(item) {
-
-                    return (
-                        item.id ===
-                        editingEntryId
-                    );
-
-                });
+        const index = entries.findIndex(
+            entry =>
+                entry.id === editingEntryId
+        );
 
 
         if (index !== -1) {
 
-            entries[editingSection][index]
-                .title =
+            entries[index].title =
                 title || "Untitled";
 
-
-            entries[editingSection][index]
-                .content =
+            entries[index].content =
                 content;
 
-
-            entries[editingSection][index]
-                .updated =
+            entries[index].updatedAt =
                 new Date().toISOString();
         }
 
@@ -425,9 +402,13 @@ function saveEntry() {
 
     else {
 
-        entries[editingSection].unshift({
+        entries.unshift({
 
-            id: Date.now(),
+            id:
+                Date.now().toString(),
+
+            section:
+                editingSection,
 
             title:
                 title || "Untitled",
@@ -435,28 +416,26 @@ function saveEntry() {
             content:
                 content,
 
-            date:
+            createdAt:
                 new Date().toISOString(),
 
-            updated:
+            updatedAt:
                 new Date().toISOString()
-
         });
-
     }
 
 
     saveEntries(entries);
 
 
-    const sectionToReload =
+    const sectionToRefresh =
         editingSection;
 
 
     closeEditor();
 
 
-    loadEntries(sectionToReload);
+    loadEntries(sectionToRefresh);
 }
 
 
@@ -464,20 +443,11 @@ function saveEntry() {
    LOAD ENTRIES
 ===================================================== */
 
-function loadEntries(section) {
-
-    const sectionElement =
-        document.getElementById(section);
-
-
-    if (!sectionElement) {
-        return;
-    }
-
+function loadEntries(sectionName) {
 
     const container =
-        sectionElement.querySelector(
-            ".entries-list"
+        document.getElementById(
+            `${sectionName}Entries`
         );
 
 
@@ -487,299 +457,298 @@ function loadEntries(section) {
 
 
     const entries =
-        getEntries();
+        getEntries().filter(
+            entry =>
+                entry.section === sectionName
+        );
 
 
-    const list =
-        entries[section] || [];
+    if (entries.length === 0) {
+
+        const emptyMessages = {
+
+            journal: [
+                "fa-feather",
+                "No journal entries yet",
+                "Tap + to write your first entry."
+            ],
+
+            notes: [
+                "fa-note-sticky",
+                "No notes yet",
+                "Write something you want to remember."
+            ],
+
+            hobbies: [
+                "fa-palette",
+                "No hobbies saved",
+                "Write about something you enjoy doing."
+            ],
+
+            bookshelf: [
+                "fa-book",
+                "Your bookshelf is empty",
+                "Add a book you'd like to remember."
+            ],
+
+            gratitude: [
+                "fa-heart",
+                "Nothing here yet",
+                "Write something you're grateful for."
+            ],
+
+            ideas: [
+                "fa-lightbulb",
+                "No ideas yet",
+                "Save every interesting thought."
+            ],
+
+            planner: [
+                "fa-calendar-days",
+                "No plans yet",
+                "Add a plan or something you want to remember."
+            ]
+        };
 
 
-    container.innerHTML = "";
+        const message =
+            emptyMessages[sectionName] ||
+            [
+                "fa-feather",
+                "Nothing here yet",
+                "Tap + to add something."
+            ];
 
-
-    /* Empty */
-
-    if (list.length === 0) {
 
         container.innerHTML = `
 
             <div class="empty-state">
 
-                <div class="empty-icon">
-                    ✦
-                </div>
+                <i class="fa-solid ${message[0]}"></i>
 
-                <h3>
-                    Nothing here yet
-                </h3>
+                <h3>${message[1]}</h3>
 
-                <p>
-                    Start writing something beautiful.
-                </p>
+                <p>${message[2]}</p>
 
             </div>
 
         `;
+
 
         return;
     }
 
 
-    /* Entries */
+    container.innerHTML = "";
 
-    list.forEach(function(entry) {
+
+    entries.forEach(entry => {
 
         const card =
-            document.createElement("div");
+            document.createElement("article");
+
+        card.className = "entry-card";
 
 
-        card.className =
-            "entry-card";
+        const safeTitle =
+            escapeHTML(entry.title);
 
 
-        const main =
-            document.createElement("button");
+        const preview =
+            escapeHTML(
+                entry.content.length > 160
+                    ? entry.content.substring(0, 160) + "..."
+                    : entry.content
+            );
 
 
-        main.className =
-            "entry-main";
+        const date =
+            formatDate(entry.createdAt);
 
 
-        main.type =
-            "button";
+        card.innerHTML = `
+
+            <div class="entry-main">
+
+                <button class="entry-open">
+
+                    <div class="entry-date">
+                        ${date}
+                    </div>
+
+                    <h3>
+                        ${safeTitle}
+                    </h3>
+
+                    <p>
+                        ${preview}
+                    </p>
+
+                </button>
 
 
-        main.innerHTML = `
+                <div class="entry-actions">
 
-            <div class="entry-title">
-                ${escapeHTML(
-                    entry.title || "Untitled"
-                )}
+                    <button
+                        class="todo-edit"
+                        title="Edit">
+
+                        <i class="fa-solid fa-pen"></i>
+
+                    </button>
+
+
+                    <button
+                        class="todo-delete"
+                        title="Delete">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </div>
+
             </div>
-
-            <div class="entry-preview">
-                ${escapeHTML(
-                    (entry.content || "")
-                        .substring(0, 150)
-                )}
-            </div>
-
-            <small>
-                ${formatDate(entry.date)}
-            </small>
 
         `;
 
 
-        main.addEventListener(
-            "click",
-            function() {
-
-                openEntry(
-                    section,
-                    entry.id
-                );
-
-            }
-        );
-
-
-        const actions =
-            document.createElement("div");
-
-
-        actions.className =
-            "entry-actions";
+        const openButton =
+            card.querySelector(".entry-open");
 
 
         const editButton =
-            document.createElement("button");
+            card.querySelector(".todo-edit");
 
 
-        editButton.type =
-            "button";
+        const deleteButton =
+            card.querySelector(".todo-delete");
 
-        editButton.className =
-            "edit-btn";
 
-        editButton.textContent =
-            "✎";
-
-        editButton.title =
-            "Edit";
+        openButton.addEventListener(
+            "click",
+            () => openEntry(entry.id)
+        );
 
 
         editButton.addEventListener(
             "click",
-            function(event) {
+            event => {
 
                 event.stopPropagation();
 
-                editEntry(
-                    section,
-                    entry.id
-                );
-
+                editEntry(entry.id);
             }
         );
-
-
-        const deleteButton =
-            document.createElement("button");
-
-
-        deleteButton.type =
-            "button";
-
-        deleteButton.className =
-            "delete-btn";
-
-        deleteButton.textContent =
-            "×";
-
-        deleteButton.title =
-            "Delete";
 
 
         deleteButton.addEventListener(
             "click",
-            function(event) {
+            event => {
 
                 event.stopPropagation();
 
-                deleteEntry(
-                    section,
-                    entry.id
-                );
-
+                deleteEntry(entry.id);
             }
         );
 
 
-        actions.appendChild(editButton);
-        actions.appendChild(deleteButton);
-
-
-        card.appendChild(main);
-        card.appendChild(actions);
-
-
         container.appendChild(card);
-
     });
 }
 
 
 /* =====================================================
-   OPEN SAVED ENTRY
+   OPEN ENTRY
 ===================================================== */
 
-function openEntry(section, id) {
+function openEntry(entryId) {
 
     const entries =
         getEntries();
 
 
-    const list =
-        entries[section] || [];
-
-
     const entry =
-        list.find(function(item) {
+        entries.find(
+            item =>
+                item.id === entryId
+        );
 
-            return item.id === id;
 
-        });
-
-
-    if (!entry) {
-        return;
-    }
+    if (!entry) return;
 
 
     const modal =
-        document.getElementById("view-modal");
+        document.getElementById("viewModal");
 
 
     const title =
-        document.getElementById("view-title");
+        document.getElementById("viewTitle");
 
 
     const content =
-        document.getElementById("view-content");
+        document.getElementById("viewContent");
 
 
-    if (
-        !modal ||
-        !title ||
-        !content
-    ) {
-        return;
-    }
-
-
-    title.textContent =
-        entry.title || "Untitled";
-
-
-    content.textContent =
-        entry.content || "";
+    const date =
+        document.getElementById("viewDate");
 
 
     const editButton =
-        document.getElementById(
-            "view-edit"
-        );
+        document.getElementById("viewEditButton");
 
 
     const deleteButton =
-        document.getElementById(
-            "view-delete"
+        document.getElementById("viewDeleteButton");
+
+
+    if (!modal) return;
+
+
+    title.textContent =
+        entry.title;
+
+
+    date.textContent =
+        formatDate(entry.createdAt);
+
+
+    content.innerHTML =
+        escapeHTML(entry.content)
+            .replace(/\n/g, "<br>");
+
+
+    editButton.onclick = () => {
+
+        closeView();
+
+        openEditor(
+            entry.section,
+            entry.id
         );
+    };
 
 
-    if (editButton) {
+    deleteButton.onclick = () => {
 
-        editButton.onclick =
-            function() {
+        closeView();
 
-                closeView();
-
-                openEditor(
-                    section,
-                    id
-                );
-
-            };
-    }
-
-
-    if (deleteButton) {
-
-        deleteButton.onclick =
-            function() {
-
-                closeView();
-
-                deleteEntry(
-                    section,
-                    id
-                );
-
-            };
-    }
+        deleteEntry(entry.id);
+    };
 
 
     modal.classList.add("show");
 }
 
 
+/* =====================================================
+   CLOSE ENTRY VIEW
+===================================================== */
+
 function closeView() {
 
     const modal =
-        document.getElementById(
-            "view-modal"
-        );
+        document.getElementById("viewModal");
 
 
     if (modal) {
@@ -789,79 +758,95 @@ function closeView() {
 
 
 /* =====================================================
-   EDIT / DELETE ENTRY
+   EDIT ENTRY
 ===================================================== */
 
-function editEntry(section, id) {
-
-    openEditor(
-        section,
-        id
-    );
-}
-
-
-function deleteEntry(section, id) {
+function editEntry(entryId) {
 
     const entries =
         getEntries();
 
 
-    if (!entries[section]) {
-        return;
-    }
-
-
-    if (
-        !confirm(
-            "Delete this entry?"
-        )
-    ) {
-        return;
-    }
-
-
-    entries[section] =
-        entries[section].filter(
-            function(item) {
-
-                return item.id !== id;
-
-            }
+    const entry =
+        entries.find(
+            item =>
+                item.id === entryId
         );
 
 
-    saveEntries(entries);
+    if (!entry) return;
 
 
-    loadEntries(section);
+    openEditor(
+        entry.section,
+        entry.id
+    );
 }
 
 
 /* =====================================================
-   TODO LIST
+   DELETE ENTRY
+===================================================== */
+
+function deleteEntry(entryId) {
+
+    const entries =
+        getEntries();
+
+
+    const entry =
+        entries.find(
+            item =>
+                item.id === entryId
+        );
+
+
+    if (!entry) return;
+
+
+    const confirmed =
+        confirm(
+            `Delete "${entry.title}"?`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const updated =
+        entries.filter(
+            item =>
+                item.id !== entryId
+        );
+
+
+    saveEntries(updated);
+
+
+    loadEntries(entry.section);
+}
+
+
+/* =====================================================
+   TO-DO LIST
 ===================================================== */
 
 function addTodo() {
 
     const input =
-        document.getElementById(
-            "todo-input"
-        );
+        document.getElementById("todoInput");
 
 
-    if (!input) {
-        return;
-    }
+    if (!input) return;
 
 
     const text =
         input.value.trim();
 
 
-    if (!text) {
-        return;
-    }
+    if (!text) return;
 
 
     const todos =
@@ -870,12 +855,17 @@ function addTodo() {
 
     todos.unshift({
 
-        id: Date.now(),
+        id:
+            Date.now().toString(),
 
-        text: text,
+        text:
+            text,
 
-        completed: false
+        completed:
+            false,
 
+        createdAt:
+            new Date().toISOString()
     });
 
 
@@ -889,24 +879,21 @@ function addTodo() {
 }
 
 
+/* =====================================================
+   LOAD TODOS
+===================================================== */
+
 function loadTodos() {
 
     const container =
-        document.getElementById(
-            "todo-list"
-        );
+        document.getElementById("todoList");
 
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
 
     const todos =
         getTodos();
-
-
-    container.innerHTML = "";
 
 
     if (todos.length === 0) {
@@ -915,27 +902,27 @@ function loadTodos() {
 
             <div class="empty-state">
 
-                <div class="empty-icon">
-                    ✓
-                </div>
+                <i class="fa-solid fa-check"></i>
 
-                <h3>
-                    No tasks yet
-                </h3>
+                <h3>Nothing here yet</h3>
 
                 <p>
-                    Add something you need to do.
+                    Add something you want to accomplish.
                 </p>
 
             </div>
 
         `;
 
+
         return;
     }
 
 
-    todos.forEach(function(todo) {
+    container.innerHTML = "";
+
+
+    todos.forEach(todo => {
 
         const item =
             document.createElement("div");
@@ -946,124 +933,96 @@ function loadTodos() {
 
 
         if (todo.completed) {
-            item.classList.add(
-                "completed"
-            );
+            item.classList.add("completed");
         }
 
 
+        item.innerHTML = `
+
+            <button class="todo-check">
+
+                <i class="fa-solid fa-check"></i>
+
+            </button>
+
+
+            <span class="todo-text">
+                ${escapeHTML(todo.text)}
+            </span>
+
+
+            <div class="todo-actions">
+
+                <button class="todo-edit"
+                        title="Edit">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+
+                <button class="todo-delete"
+                        title="Delete">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </div>
+
+        `;
+
+
         const check =
-            document.createElement("button");
-
-
-        check.type =
-            "button";
-
-        check.className =
-            "todo-check";
-
-        check.textContent =
-            todo.completed ? "✓" : "";
-
-
-        check.addEventListener(
-            "click",
-            function() {
-
-                toggleTodo(todo.id);
-
-            }
-        );
-
-
-        const text =
-            document.createElement("span");
-
-
-        text.className =
-            "todo-text";
-
-        text.textContent =
-            todo.text;
+            item.querySelector(".todo-check");
 
 
         const edit =
-            document.createElement("button");
-
-
-        edit.type =
-            "button";
-
-        edit.className =
-            "todo-edit";
-
-        edit.textContent =
-            "✎";
-
-
-        edit.addEventListener(
-            "click",
-            function() {
-
-                editTodo(todo.id);
-
-            }
-        );
+            item.querySelector(".todo-edit");
 
 
         const remove =
-            document.createElement("button");
+            item.querySelector(".todo-delete");
 
 
-        remove.type =
-            "button";
-
-        remove.className =
-            "todo-delete";
-
-        remove.textContent =
-            "×";
+        check.onclick = () => {
+            toggleTodo(todo.id);
+        };
 
 
-        remove.addEventListener(
-            "click",
-            function() {
-
-                deleteTodo(todo.id);
-
-            }
-        );
+        edit.onclick = () => {
+            editTodo(todo.id);
+        };
 
 
-        item.appendChild(check);
-        item.appendChild(text);
-        item.appendChild(edit);
-        item.appendChild(remove);
+        remove.onclick = () => {
+            deleteTodo(todo.id);
+        };
 
 
         container.appendChild(item);
-
     });
 }
 
 
-function toggleTodo(id) {
+/* =====================================================
+   TOGGLE TODO
+===================================================== */
+
+function toggleTodo(todoId) {
 
     const todos =
         getTodos();
 
 
     const todo =
-        todos.find(function(item) {
+        todos.find(
+            item =>
+                item.id === todoId
+        );
 
-            return item.id === id;
 
-        });
-
-
-    if (!todo) {
-        return;
-    }
+    if (!todo) return;
 
 
     todo.completed =
@@ -1077,28 +1036,29 @@ function toggleTodo(id) {
 }
 
 
-function editTodo(id) {
+/* =====================================================
+   EDIT TODO
+===================================================== */
+
+function editTodo(todoId) {
 
     const todos =
         getTodos();
 
 
     const todo =
-        todos.find(function(item) {
+        todos.find(
+            item =>
+                item.id === todoId
+        );
 
-            return item.id === id;
 
-        });
-
-
-    if (!todo) {
-        return;
-    }
+    if (!todo) return;
 
 
     const newText =
         prompt(
-            "Edit task:",
+            "Edit your task:",
             todo.text
         );
 
@@ -1108,17 +1068,15 @@ function editTodo(id) {
     }
 
 
-    const clean =
+    const cleanText =
         newText.trim();
 
 
-    if (!clean) {
-        return;
-    }
+    if (!cleanText) return;
 
 
     todo.text =
-        clean;
+        cleanText;
 
 
     saveTodos(todos);
@@ -1128,30 +1086,29 @@ function editTodo(id) {
 }
 
 
-function deleteTodo(id) {
+/* =====================================================
+   DELETE TODO
+===================================================== */
 
-    if (
-        !confirm(
-            "Delete this task?"
-        )
-    ) {
+function deleteTodo(todoId) {
+
+    const confirmed =
+        confirm("Delete this task?");
+
+
+    if (!confirmed) {
         return;
     }
 
 
     const todos =
-        getTodos();
+        getTodos().filter(
+            todo =>
+                todo.id !== todoId
+        );
 
 
-    saveTodos(
-        todos.filter(
-            function(item) {
-
-                return item.id !== id;
-
-            }
-        )
-    );
+    saveTodos(todos);
 
 
     loadTodos();
@@ -1162,7 +1119,7 @@ function deleteTodo(id) {
    MOOD
 ===================================================== */
 
-function saveMood(mood) {
+function saveMood(moodName) {
 
     const moods =
         getMoods();
@@ -1170,13 +1127,14 @@ function saveMood(mood) {
 
     moods.unshift({
 
-        id: Date.now(),
+        id:
+            Date.now().toString(),
 
-        mood: mood,
+        mood:
+            moodName,
 
         date:
             new Date().toISOString()
-
     });
 
 
@@ -1187,24 +1145,21 @@ function saveMood(mood) {
 }
 
 
+/* =====================================================
+   LOAD MOODS
+===================================================== */
+
 function loadMoods() {
 
     const container =
-        document.getElementById(
-            "mood-history"
-        );
+        document.getElementById("moodHistory");
 
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
 
     const moods =
         getMoods();
-
-
-    container.innerHTML = "";
 
 
     if (moods.length === 0) {
@@ -1213,27 +1168,25 @@ function loadMoods() {
 
             <div class="empty-state">
 
-                <div class="empty-icon">
-                    ☾
-                </div>
+                <i class="fa-solid fa-cloud-moon"></i>
 
-                <h3>
-                    No mood entries yet
-                </h3>
+                <h3>No moods recorded</h3>
 
-                <p>
-                    Choose a mood above.
-                </p>
+                <p>Choose a mood above.</p>
 
             </div>
 
         `;
 
+
         return;
     }
 
 
-    moods.forEach(function(item) {
+    container.innerHTML = "";
+
+
+    moods.forEach(item => {
 
         const row =
             document.createElement("div");
@@ -1243,78 +1196,60 @@ function loadMoods() {
             "mood-history-item";
 
 
-        const mood =
-            document.createElement("span");
+        row.innerHTML = `
+
+            <div>
+
+                <strong>
+                    ${escapeHTML(item.mood)}
+                </strong>
+
+                <small>
+                    ${formatDate(item.date)}
+                </small>
+
+            </div>
 
 
-        mood.textContent =
-            item.mood;
+            <button
+                class="todo-delete"
+                title="Delete">
+
+                <i class="fa-solid fa-trash"></i>
+
+            </button>
+
+        `;
 
 
-        const date =
-            document.createElement("small");
+        row.querySelector(
+            ".todo-delete"
+        ).onclick = () => {
 
+            deleteMood(item.id);
 
-        date.textContent =
-            formatDate(item.date);
-
-
-        const remove =
-            document.createElement("button");
-
-
-        remove.type =
-            "button";
-
-        remove.textContent =
-            "×";
-
-
-        remove.addEventListener(
-            "click",
-            function() {
-
-                deleteMood(item.id);
-
-            }
-        );
-
-
-        row.appendChild(mood);
-        row.appendChild(date);
-        row.appendChild(remove);
+        };
 
 
         container.appendChild(row);
-
     });
 }
 
 
-function deleteMood(id) {
+/* =====================================================
+   DELETE MOOD
+===================================================== */
 
-    if (
-        !confirm(
-            "Delete this mood entry?"
-        )
-    ) {
-        return;
-    }
-
+function deleteMood(moodId) {
 
     const moods =
-        getMoods();
+        getMoods().filter(
+            mood =>
+                mood.id !== moodId
+        );
 
 
-    saveMoods(
-        moods.filter(
-            function(item) {
-
-                return item.id !== id;
-
-            }
-        )
-    );
+    saveMoods(moods);
 
 
     loadMoods();
@@ -1327,31 +1262,59 @@ function deleteMood(id) {
 
 function toggleTheme() {
 
-    document.body.classList.toggle(
-        "light-mode"
-    );
-
-
-    const light =
-        document.body.classList.contains(
+    const isLight =
+        document.body.classList.toggle(
             "light-mode"
-       );
+        );
 
+
+    localStorage.setItem(
+        THEME_KEY,
+        isLight ? "light" : "dark"
+    );
+}
+
+
+/* =====================================================
+   LOAD THEME
+===================================================== */
+
+function loadTheme() {
+
+    const theme =
+        localStorage.getItem(
+            THEME_KEY
+        );
+
+
+    if (theme === "light") {
+
+        document.body.classList.add(
+            "light-mode"
+        );
+
+    } else {
+
+        document.body.classList.remove(
+            "light-mode"
+        );
     }
 }
 
 
 /* =====================================================
-   CLEAR EVERYTHING
+   CLEAR ALL DATA
 ===================================================== */
 
 function clearAllData() {
 
-    if (
-        !confirm(
-            "Delete all your Obsidian data?"
-        )
-    ) {
+    const confirmed =
+        confirm(
+            "This will delete all your Obsidian entries, tasks and mood history. Continue?"
+        );
+
+
+    if (!confirmed) {
         return;
     }
 
@@ -1360,69 +1323,60 @@ function clearAllData() {
         ENTRY_KEY
     );
 
+
     localStorage.removeItem(
         TODO_KEY
     );
+
 
     localStorage.removeItem(
         MOOD_KEY
     );
 
 
-    location.reload();
+    alert("All data has been cleared.");
+
+
+    loadTodos();
+    loadMoods();
+
+
+    [
+        "journal",
+        "notes",
+        "hobbies",
+        "bookshelf",
+        "gratitude",
+        "ideas",
+        "planner"
+    ].forEach(section => {
+
+        loadEntries(section);
+
+    });
 }
 
 
 /* =====================================================
-   DATE
+   DATE FORMAT
 ===================================================== */
-
-function showTodayDate() {
-
-    const element =
-        document.getElementById(
-            "today-date"
-        );
-
-
-    if (!element) {
-        return;
-    }
-
-
-    const today =
-        new Date();
-
-
-    element.textContent =
-        today.toLocaleDateString(
-            undefined,
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            }
-        );
-}
-
 
 function formatDate(dateString) {
 
-    if (!dateString) {
-        return "";
-    }
-
-
     const date =
         new Date(dateString);
+
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
 
 
     return date.toLocaleDateString(
         undefined,
         {
             day: "numeric",
-            month: "short",
+            month: "long",
             year: "numeric"
         }
     );
@@ -1430,17 +1384,17 @@ function formatDate(dateString) {
 
 
 /* =====================================================
-   SAFE TEXT
+   SECURITY / HTML ESCAPE
 ===================================================== */
 
-function escapeHTML(text) {
+function escapeHTML(value) {
 
     const div =
         document.createElement("div");
 
 
     div.textContent =
-        text || "";
+        value ?? "";
 
 
     return div.innerHTML;
@@ -1448,85 +1402,89 @@ function escapeHTML(text) {
 
 
 /* =====================================================
-   MODAL CLICK OUTSIDE
+   CLOSE MODALS
 ===================================================== */
 
-window.addEventListener(
+document.addEventListener(
     "click",
-    function(event) {
+    event => {
 
         const editor =
-            document.getElementById(
-                "editor-modal"
-            );
+            document.getElementById("editorModal");
 
 
-        const viewer =
-            document.getElementById(
-                "view-modal"
-            );
+        const view =
+            document.getElementById("viewModal");
 
 
-        if (
-            editor &&
-            event.target === editor
-        ) {
+        if (event.target === editor) {
             closeEditor();
         }
 
 
-        if (
-            viewer &&
-            event.target === viewer
-        ) {
+        if (event.target === view) {
             closeView();
         }
-
     }
 );
 
 
 /* =====================================================
-   ESCAPE KEY
+   KEYBOARD SHORTCUTS
 ===================================================== */
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    event => {
 
-        if (
-            event.key === "Escape"
-        ) {
+        if (event.key === "Escape") {
 
             closeEditor();
 
             closeView();
 
+            closeSidebar();
         }
-
     }
 );
 
 
 /* =====================================================
-   START APP
+   TODO ENTER KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.target &&
+            event.target.id === "todoInput" &&
+            event.key === "Enter"
+        ) {
+
+            addTodo();
+        }
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE APP
 ===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    () => {
 
         loadTheme();
-
-        showTodayDate();
 
         loadTodos();
 
         loadMoods();
 
 
-        const sections = [
-
+        [
             "journal",
             "notes",
             "hobbies",
@@ -1534,20 +1492,13 @@ document.addEventListener(
             "gratitude",
             "ideas",
             "planner"
+        ].forEach(section => {
 
-        ];
+            loadEntries(section);
 
-
-        sections.forEach(
-            function(section) {
-
-                loadEntries(section);
-
-            }
-        );
+        });
 
 
         showSection("home");
-
     }
 );
