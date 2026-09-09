@@ -1,4 +1,4 @@
-const CACHE_NAME = "obsidian-v2";
+const CACHE_NAME = "obsidian-v3";
 
 const FILES_TO_CACHE = [
     "./",
@@ -8,88 +8,36 @@ const FILES_TO_CACHE = [
     "./manifest.json"
 ];
 
+self.addEventListener("install", event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.addAll(FILES_TO_CACHE);
+        })
+    );
 
-self.addEventListener(
-    "install",
-    function (event) {
+    self.skipWaiting();
+});
 
-        event.waitUntil(
-
-            caches.open(CACHE_NAME)
-                .then(function (cache) {
-
-                    return cache.addAll(
-                        FILES_TO_CACHE
-                    );
-
+self.addEventListener("activate", event => {
+    event.waitUntil(
+        caches.keys().then(names => {
+            return Promise.all(
+                names.map(name => {
+                    if (name !== CACHE_NAME) {
+                        return caches.delete(name);
+                    }
                 })
+            );
+        })
+    );
 
-        );
+    self.clients.claim();
+});
 
-        self.skipWaiting();
-    }
-);
-
-
-self.addEventListener(
-    "activate",
-    function (event) {
-
-        event.waitUntil(
-
-            caches.keys()
-                .then(function (cacheNames) {
-
-                    return Promise.all(
-
-                        cacheNames
-                            .filter(function (cacheName) {
-
-                                return cacheName !==
-                                    CACHE_NAME;
-
-                            })
-
-                            .map(function (cacheName) {
-
-                                return caches.delete(
-                                    cacheName
-                                );
-
-                            })
-
-                    );
-
-                })
-
-        );
-
-        self.clients.claim();
-    }
-);
-
-
-self.addEventListener(
-    "fetch",
-    function (event) {
-
-        event.respondWith(
-
-            fetch(event.request)
-                .then(function (response) {
-
-                    return response;
-
-                })
-                .catch(function () {
-
-                    return caches.match(
-                        event.request
-                    );
-
-                })
-
-        );
-
-    }
-);
+self.addEventListener("fetch", event => {
+    event.respondWith(
+        fetch(event.request).catch(() => {
+            return caches.match(event.request);
+        })
+    );
+});
