@@ -2,25 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#050505"
-    >
+    <meta name="theme-color" content="#050505">
 
     <title>Obsidian</title>
 
+    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
@@ -35,9 +24,7 @@
 
 <body>
 
-<!-- =========================
-     SIDEBAR
-========================= -->
+<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
@@ -52,92 +39,72 @@
 
     <nav class="navigation">
 
-        <button
-            class="nav-item active"
+        <button class="nav-item active"
             data-section="home"
-            onclick="showSection('home')"
-        >
+            onclick="showSection('home')">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="journal"
-            onclick="showSection('journal')"
-        >
+            onclick="showSection('journal')">
             <i class="fa-solid fa-book-open"></i>
             <span>Journal</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="todo"
-            onclick="showSection('todo')"
-        >
+            onclick="showSection('todo')">
             <i class="fa-solid fa-list-check"></i>
             <span>To-Do List</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="notes"
-            onclick="showSection('notes')"
-        >
+            onclick="showSection('notes')">
             <i class="fa-solid fa-note-sticky"></i>
             <span>Notes</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="hobbies"
-            onclick="showSection('hobbies')"
-        >
+            onclick="showSection('hobbies')">
             <i class="fa-solid fa-heart"></i>
             <span>Hobbies</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="mood"
-            onclick="showSection('mood')"
-        >
+            onclick="showSection('mood')">
             <i class="fa-solid fa-face-smile"></i>
             <span>Mood</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="bookshelf"
-            onclick="showSection('bookshelf')"
-        >
+            onclick="showSection('bookshelf')">
             <i class="fa-solid fa-book"></i>
             <span>Bookshelf</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="gratitude"
-            onclick="showSection('gratitude')"
-        >
+            onclick="showSection('gratitude')">
             <i class="fa-solid fa-sparkles"></i>
             <span>Gratitude</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="ideas"
-            onclick="showSection('ideas')"
-        >
+            onclick="showSection('ideas')">
             <i class="fa-solid fa-lightbulb"></i>
             <span>Ideas</span>
         </button>
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="planner"
-            onclick="showSection('planner')"
-        >
+            onclick="showSection('planner')">
             <i class="fa-solid fa-calendar"></i>
             <span>Planner</span>
         </button>
@@ -146,11 +113,9 @@
 
     <div class="sidebar-bottom">
 
-        <button
-            class="nav-item"
+        <button class="nav-item"
             data-section="settings"
-            onclick="showSection('settings')"
-        >
+            onclick="showSection('settings')">
             <i class="fa-solid fa-gear"></i>
             <span>Settings</span>
         </button>
@@ -160,16 +125,11 @@
 </aside>
 
 
-<!-- =========================
-     MOBILE TOP BAR
-========================= -->
+<!-- MOBILE HEADER -->
 
 <header class="mobile-topbar">
 
-    <button
-        class="menu-button"
-        onclick="toggleSidebar()"
-    >
+    <button class="menu-button" onclick="toggleSidebar()">
         <i class="fa-solid fa-bars"></i>
     </button>
 
@@ -180,9 +140,7 @@
 </header>
 
 
-<!-- =========================
-     MAIN
-========================= -->
+<!-- MAIN CONTENT -->
 
 <main class="main-content">
 
@@ -196,22 +154,14 @@
             </h2>
         </div>
 
-        <div
-            id="today-date"
-            class="today-date"
-        ></div>
+        <div id="today-date" class="today-date"></div>
 
     </div>
 
 
-    <!-- =====================
-         HOME
-    ====================== -->
+    <!-- HOME -->
 
-    <section
-        id="home"
-        class="page-section active"
-    >
+    <section id="home" class="page-section active">
 
         <div class="hero">
 
@@ -233,43 +183,59 @@
 
         <div class="home-grid">
 
-            <button
-                class="home-card"
-                onclick="showSection('journal')"
-            >
+            <button class="home-card"
+                onclick="showSection('journal')">
+
                 <span class="card-icon">☾</span>
+
                 <h3>Journal</h3>
-                <p>Write about your day.</p>
+
+                <p>
+                    Write about your day.
+                </p>
+
             </button>
 
 
-            <button
-                class="home-card"
-                onclick="showSection('notes')"
-            >
+            <button class="home-card"
+                onclick="showSection('notes')">
+
                 <span class="card-icon">✎</span>
+
                 <h3>Notes</h3>
-                <p>Keep your thoughts together.</p>
+
+                <p>
+                    Keep your thoughts together.
+                </p>
+
             </button>
 
 
-            <button
-                class="home-card"
-                onclick="showSection('todo')"
-            >
+            <button class="home-card"
+                onclick="showSection('todo')">
+
                 <span class="card-icon">✓</span>
+
                 <h3>To-Do List</h3>
-                <p>Keep track of little things.</p>
+
+                <p>
+                    Keep track of little things.
+                </p>
+
             </button>
 
 
-            <button
-                class="home-card"
-                onclick="showSection('ideas')"
-            >
+            <button class="home-card"
+                onclick="showSection('ideas')">
+
                 <span class="card-icon">✦</span>
+
                 <h3>Ideas</h3>
-                <p>Save the thoughts worth keeping.</p>
+
+                <p>
+                    Save thoughts worth keeping.
+                </p>
+
             </button>
 
         </div>
@@ -277,27 +243,25 @@
     </section>
 
 
-    <!-- =====================
-         JOURNAL
-    ====================== -->
+    <!-- JOURNAL -->
 
-    <section
-        id="journal"
-        class="page-section"
-    >
+    <section id="journal" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">WRITE FREELY</p>
+
                 <h2>Journal</h2>
-                <p>Some thoughts are meant to be written down.</p>
+
+                <p>
+                    Some thoughts are meant to be written down.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('journal')"
-            >
+                onclick="openEditor('journal')">
                 + New Entry
             </button>
 
@@ -308,24 +272,24 @@
     </section>
 
 
-    <!-- =====================
-         TODO
-    ====================== -->
+    <!-- TODO -->
 
-    <section
-        id="todo"
-        class="page-section"
-    >
+    <section id="todo" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">STAY ORGANIZED</p>
+
                 <h2>To-Do List</h2>
-                <p>Small steps still count.</p>
+
+                <p>
+                    Small steps still count.
+                </p>
             </div>
 
         </div>
+
 
         <div class="todo-input-area">
 
@@ -340,8 +304,7 @@
 
             <button
                 class="primary-button"
-                onclick="addTodo()"
-            >
+                onclick="addTodo()">
                 Add
             </button>
 
@@ -352,27 +315,25 @@
     </section>
 
 
-    <!-- =====================
-         NOTES
-    ====================== -->
+    <!-- NOTES -->
 
-    <section
-        id="notes"
-        class="page-section"
-    >
+    <section id="notes" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">REMEMBER</p>
+
                 <h2>Notes</h2>
-                <p>Keep useful thoughts in one place.</p>
+
+                <p>
+                    Keep useful thoughts in one place.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('notes')"
-            >
+                onclick="openEditor('notes')">
                 + New Note
             </button>
 
@@ -383,27 +344,25 @@
     </section>
 
 
-    <!-- =====================
-         HOBBIES
-    ====================== -->
+    <!-- HOBBIES -->
 
-    <section
-        id="hobbies"
-        class="page-section"
-    >
+    <section id="hobbies" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">THINGS YOU LOVE</p>
+
                 <h2>Hobbies</h2>
-                <p>Make space for the things you enjoy.</p>
+
+                <p>
+                    Make space for the things you enjoy.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('hobbies')"
-            >
+                onclick="openEditor('hobbies')">
                 + Add Hobby
             </button>
 
@@ -414,21 +373,20 @@
     </section>
 
 
-    <!-- =====================
-         MOOD
-    ====================== -->
+    <!-- MOOD -->
 
-    <section
-        id="mood"
-        class="page-section"
-    >
+    <section id="mood" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">HOW ARE YOU?</p>
+
                 <h2>Mood</h2>
-                <p>Check in with yourself.</p>
+
+                <p>
+                    Check in with yourself.
+                </p>
             </div>
 
         </div>
@@ -437,28 +395,28 @@
         <div class="mood-picker">
 
             <button onclick="saveMood('Happy')">
-                😊
-                <span>Happy</span>
+                <span>😊</span>
+                <small>Happy</small>
             </button>
 
             <button onclick="saveMood('Calm')">
-                😌
-                <span>Calm</span>
+                <span>😌</span>
+                <small>Calm</small>
             </button>
 
             <button onclick="saveMood('Okay')">
-                🙂
-                <span>Okay</span>
+                <span>🙂</span>
+                <small>Okay</small>
             </button>
 
             <button onclick="saveMood('Tired')">
-                😴
-                <span>Tired</span>
+                <span>😴</span>
+                <small>Tired</small>
             </button>
 
             <button onclick="saveMood('Sad')">
-                🌧️
-                <span>Sad</span>
+                <span>🌧️</span>
+                <small>Sad</small>
             </button>
 
         </div>
@@ -475,27 +433,25 @@
     </section>
 
 
-    <!-- =====================
-         BOOKSHELF
-    ====================== -->
+    <!-- BOOKSHELF -->
 
-    <section
-        id="bookshelf"
-        class="page-section"
-    >
+    <section id="bookshelf" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">READ & DISCOVER</p>
+
                 <h2>Bookshelf</h2>
-                <p>Books you want to read or remember.</p>
+
+                <p>
+                    Books you want to read or remember.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('bookshelf')"
-            >
+                onclick="openEditor('bookshelf')">
                 + Add Book
             </button>
 
@@ -506,27 +462,25 @@
     </section>
 
 
-    <!-- =====================
-         GRATITUDE
-    ====================== -->
+    <!-- GRATITUDE -->
 
-    <section
-        id="gratitude"
-        class="page-section"
-    >
+    <section id="gratitude" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">APPRECIATE</p>
+
                 <h2>Gratitude</h2>
-                <p>Notice the little things.</p>
+
+                <p>
+                    Notice the little things.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('gratitude')"
-            >
+                onclick="openEditor('gratitude')">
                 + Add
             </button>
 
@@ -537,27 +491,25 @@
     </section>
 
 
-    <!-- =====================
-         IDEAS
-    ====================== -->
+    <!-- IDEAS -->
 
-    <section
-        id="ideas"
-        class="page-section"
-    >
+    <section id="ideas" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">CREATE</p>
+
                 <h2>Ideas</h2>
-                <p>Don't let good ideas disappear.</p>
+
+                <p>
+                    Don't let good ideas disappear.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('ideas')"
-            >
+                onclick="openEditor('ideas')">
                 + New Idea
             </button>
 
@@ -568,27 +520,25 @@
     </section>
 
 
-    <!-- =====================
-         PLANNER
-    ====================== -->
+    <!-- PLANNER -->
 
-    <section
-        id="planner"
-        class="page-section"
-    >
+    <section id="planner" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">PLAN YOUR DAYS</p>
+
                 <h2>Planner</h2>
-                <p>Give your days a little direction.</p>
+
+                <p>
+                    Give your days a little direction.
+                </p>
             </div>
 
             <button
                 class="primary-button"
-                onclick="openEditor('planner')"
-            >
+                onclick="openEditor('planner')">
                 + Add Plan
             </button>
 
@@ -599,21 +549,20 @@
     </section>
 
 
-    <!-- =====================
-         SETTINGS
-    ====================== -->
+    <!-- SETTINGS -->
 
-    <section
-        id="settings"
-        class="page-section"
-    >
+    <section id="settings" class="page-section">
 
         <div class="section-header">
 
             <div>
                 <p class="small-label">CUSTOMIZE</p>
+
                 <h2>Settings</h2>
-                <p>Make Obsidian feel like yours.</p>
+
+                <p>
+                    Make Obsidian feel like yours.
+                </p>
             </div>
 
         </div>
@@ -625,13 +574,15 @@
 
                 <div>
                     <h3>Appearance</h3>
-                    <p>Switch between dark and light mode.</p>
+
+                    <p>
+                        Switch between dark and light mode.
+                    </p>
                 </div>
 
                 <button
                     class="secondary-button"
-                    onclick="toggleTheme()"
-                >
+                    onclick="toggleTheme()">
                     ◐ Toggle Theme
                 </button>
 
@@ -642,13 +593,15 @@
 
                 <div>
                     <h3>Clear data</h3>
-                    <p>Delete all notes, tasks and moods.</p>
+
+                    <p>
+                        Delete all notes, tasks and moods.
+                    </p>
                 </div>
 
                 <button
                     class="danger-button"
-                    onclick="clearAllData()"
-                >
+                    onclick="clearAllData()">
                     Clear Everything
                 </button>
 
@@ -661,21 +614,15 @@
 </main>
 
 
-<!-- =========================
-     EDITOR MODAL
-========================= -->
+<!-- EDITOR -->
 
-<div
-    id="editor-modal"
-    class="modal"
->
+<div id="editor-modal" class="modal">
 
     <div class="modal-box">
 
         <button
             class="modal-close"
-            onclick="closeEditor()"
-        >
+            onclick="closeEditor()">
             ×
         </button>
 
@@ -689,7 +636,6 @@
             id="entry-title"
             type="text"
             placeholder="Title"
-            autocomplete="off"
         >
 
         <textarea
@@ -701,15 +647,13 @@
 
             <button
                 class="secondary-button"
-                onclick="closeEditor()"
-            >
+                onclick="closeEditor()">
                 Cancel
             </button>
 
             <button
                 class="primary-button"
-                onclick="saveEntry()"
-            >
+                onclick="saveEntry()">
                 Save
             </button>
 
@@ -720,21 +664,15 @@
 </div>
 
 
-<!-- =========================
-     VIEW MODAL
-========================= -->
+<!-- VIEW ENTRY -->
 
-<div
-    id="view-modal"
-    class="modal"
->
+<div id="view-modal" class="modal">
 
     <div class="modal-box view-box">
 
         <button
             class="modal-close"
-            onclick="closeView()"
-        >
+            onclick="closeView()">
             ×
         </button>
 
@@ -742,28 +680,24 @@
             SAVED ENTRY
         </p>
 
-        <h2 id="view-title">
-            Title
-        </h2>
+        <h2 id="view-title"></h2>
 
         <div
             id="view-content"
-            class="view-content"
-        ></div>
+            class="view-content">
+        </div>
 
         <div class="modal-buttons">
 
             <button
                 id="view-delete"
-                class="danger-button"
-            >
+                class="danger-button">
                 Delete
             </button>
 
             <button
                 id="view-edit"
-                class="primary-button"
-            >
+                class="primary-button">
                 Edit
             </button>
 
@@ -774,36 +708,9 @@
 </div>
 
 
-<!-- =========================
-     SCRIPT
-========================= -->
+<!-- JAVASCRIPT -->
 
 <script src="script.js"></script>
-
-
-<script>
-
-if ("serviceWorker" in navigator) {
-
-    window.addEventListener(
-        "load",
-        function () {
-
-            navigator.serviceWorker
-                .register("./sw.js")
-                .catch(function (error) {
-                    console.log(
-                        "Service Worker error:",
-                        error
-                    );
-                });
-
-        }
-    );
-
-}
-
-</script>
 
 </body>
 </html>
